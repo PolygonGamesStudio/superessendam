@@ -3,7 +3,8 @@
 	<title>Авторизация</title>
 </head>
 <body>
-    <h1>Идентификатор сессии: ${userId}</h1>
+    <h1>Идентификатор сессии: ${sessionId}</h1>
+    <h3>Идентификатор пользователя: ${userId}</h3>
 	<form action = "/auth" method = "POST">
 	Логин: <input type="text" name="login" />
 	</br>

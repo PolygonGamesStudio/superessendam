@@ -28,12 +28,16 @@ public class Frontend extends HttpServlet {
 
         pageVariables.put("lastLogin", login);
 
-        HttpSession session = request.getSession();
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            userId = userIdGenerator.getAndIncrement();
-            session.setAttribute("userId", userId);
+        localSession = request.getSession();
+        Long sessionId = (Long) localSession.getAttribute("sessionId");
+        if (sessionId == null) {
+            sessionId = userIdGenerator.getAndIncrement();
+            localSession.setAttribute("sessionId", sessionId);
         }
+        pageVariables.put("sessionId", sessionId);
+
+        // аналогично ли это sessionId ?
+        String userId = request.getSession().getId();
         pageVariables.put("userId", userId);
 
         response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
@@ -47,7 +51,17 @@ public class Frontend extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("lastLogin", login);
-        localSession = request.getSession();    // here
+
+        Long sessionId = (Long) localSession.getAttribute("sessionId");
+        if (sessionId == null) {
+            sessionId = userIdGenerator.getAndIncrement();
+            localSession.setAttribute("sessionId", sessionId);
+        }
+        pageVariables.put("sessionId", sessionId);
+
+        String userId = request.getSession().getId();
+        pageVariables.put("userId", userId);
+
         response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
     }
 }
