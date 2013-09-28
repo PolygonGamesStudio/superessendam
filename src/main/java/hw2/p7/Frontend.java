@@ -58,19 +58,19 @@ public class Frontend extends HttpServlet {
         pageVariables.put("sessionId", sessionId);
         pageVariables.put("lastLogin", login);
 
-        if (request.getPathInfo().equals("/timer")) {
-            pageVariables.put("refreshPeriod", "1000");
-            pageVariables.put("serverTime", getTime());
-            response.getWriter().println(PageGenerator.getPage("timer.tml", pageVariables));
-            return;
-        }
-
         Long id = (Long) session.getAttribute("userId");
         if (id == null) {
             pageVariables.put("userId", "knock-knock");
         }
         else {
             pageVariables.put("userId", id);
+        }
+
+        if (request.getPathInfo().equals("/timer")) {
+            pageVariables.put("refreshPeriod", "1000");
+            pageVariables.put("serverTime", getTime());
+            response.getWriter().println(PageGenerator.getPage("timer.tml", pageVariables));
+            return;
         }
 
         response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
@@ -97,11 +97,14 @@ public class Frontend extends HttpServlet {
             Long id = login_id.get(login);
             pageVariables.put("userId", id);
             session.setAttribute("userId", id);
+            pageVariables.put("refreshPeriod", "1000");
+            pageVariables.put("serverTime", getTime());
+//            response.getWriter().println(PageGenerator.getPage("timer.tml", pageVariables));
+            response.sendRedirect("/timer");
         }
         else {
             pageVariables.put("userId", "you shall not pass");
+            response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
         }
-
-        response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
     }
 }
