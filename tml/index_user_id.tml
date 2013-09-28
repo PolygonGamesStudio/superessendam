@@ -1,0 +1,9 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Servlet - Hello World</title>
+</head>
+<body>
+<h1>Идентификатор сессии: ${userId}</h1>
+<p>Сообщение от сервлета: ${message}</p>
+</body>
+</html>

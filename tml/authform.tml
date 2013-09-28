@@ -1,14 +1,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Авторизация</title>
+	<title>Авторизация</title>
 </head>
 <body>
-<form action = "/authform" method="POST">
-    Логин: <input type="text" name="login" />
-    <input type="submit" value="Отправить"></input>
-</form>
+    <h1>Идентификатор сессии: ${userId}</h1>
+	<form action = "/auth" method = "POST">
+	Логин: <input type="text" name="login" />
+	</br>
+	Пароль: <input type="password" name="password" />
+	</br>
+	<input type="submit" value="Отправить">
+	</form>
 
-<p>Предыдущий логин: ${lastLogin}</p>
+    <p>Предыдущий логин: ${lastLogin}</p>
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-package stat;
+package hw2.p3_4;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;

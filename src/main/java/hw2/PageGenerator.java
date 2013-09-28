@@ -1,4 +1,4 @@
-package stat;
+package hw2;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
