@@ -1,7 +1,4 @@
-package hw2.p7;
-
-
-import hw2.PageGenerator;
+package server;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,15 +17,16 @@ public class Frontend extends HttpServlet {
 
     private Map<String, Long> login_id = new HashMap<>();
     private Map<String, String> login_password = new HashMap<>();
+
     public Frontend() {
         String[] users = {"user0", "user1", "user2"};
 
         login_password.put(users[0], "user0pwd");
         login_password.put(users[1], "user1pwd");
         login_password.put(users[2], "user2pwd");
-        login_id.put(users[0], Long.valueOf(0));
-        login_id.put(users[1], Long.valueOf(1));
-        login_id.put(users[2], Long.valueOf(2));
+        login_id.put(users[0], (long) 0);
+        login_id.put(users[1], (long) 1);
+        login_id.put(users[2], (long) 2);
     }
 
     private String login = "";
@@ -61,8 +59,7 @@ public class Frontend extends HttpServlet {
         Long id = (Long) session.getAttribute("userId");
         if (id == null) {
             pageVariables.put("userId", "knock-knock");
-        }
-        else {
+        } else {
             pageVariables.put("userId", id);
         }
 
@@ -99,10 +96,9 @@ public class Frontend extends HttpServlet {
             session.setAttribute("userId", id);
             pageVariables.put("refreshPeriod", "1000");
             pageVariables.put("serverTime", getTime());
-//            response.getWriter().println(PageGenerator.getPage("timer.tml", pageVariables));
+//            response.getWriter().println(server.PageGenerator.getPage("timer.tml", pageVariables));
             response.sendRedirect("/timer");
-        }
-        else {
+        } else {
             pageVariables.put("userId", "you shall not pass");
             response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
         }
