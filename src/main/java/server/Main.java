@@ -6,10 +6,12 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import server.thread_pool.TPool;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         Frontend frontend = new Frontend();
+        TPool tPool = new TPool(5);
 
         Server server = new Server(8080);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
