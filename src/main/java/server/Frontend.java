@@ -12,8 +12,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.logging.Logger;
 
-public class Frontend extends HttpServlet {
+public class Frontend extends HttpServlet implements Runnable {
+    private static int handleCount = 0;
+    private static Logger log = Logger.getLogger(Frontend.class.getName());
 
     private Map<String, Long> login_id = new HashMap<>();
     private Map<String, String> login_password = new HashMap<>();
@@ -42,6 +45,8 @@ public class Frontend extends HttpServlet {
 
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
+        handleCount++;
+
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
@@ -75,6 +80,8 @@ public class Frontend extends HttpServlet {
 
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response) throws ServletException, IOException {
+        handleCount++;
+
         login = request.getParameter("login");
         password = request.getParameter("password");
         response.setContentType("text/html;charset=utf-8");
@@ -102,5 +109,21 @@ public class Frontend extends HttpServlet {
             pageVariables.put("userId", "you shall not pass");
             response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
         }
+    }
+
+
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            log.info(String.valueOf(handleCount));
+        }
+//        Вопросы:
+//          имеет ли смысл счетчик времени делать вне Frontend-а?
+//          почему, когда два таймера работают, +15 handle count?
     }
 }

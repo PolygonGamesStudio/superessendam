@@ -9,8 +9,10 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import server.thread_pool.ThreadPool;
 
 public class Main {
+
     public static void main(String[] args) throws Exception {
         Frontend frontend = new Frontend();
+        (new Thread(frontend)).start();
 
         String workingDir = System.getProperty("user.dir"); // log относительно текущей директории
         ThreadPool threadPool = new ThreadPool(7, workingDir + "/static/log/server.log");
@@ -30,5 +32,6 @@ public class Main {
 
         server.start();
         server.join();
+
     }
 }
