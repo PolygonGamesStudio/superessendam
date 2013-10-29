@@ -6,12 +6,14 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import server.thread_pool.TPool;
+import server.thread_pool.ThreadPool;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         Frontend frontend = new Frontend();
-        TPool tPool = new TPool(5);
+
+        String workingDir = System.getProperty("user.dir"); // log относительно текущей директории
+        ThreadPool threadPool = new ThreadPool(7, workingDir + "/static/log/server.log");
 
         Server server = new Server(8080);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
