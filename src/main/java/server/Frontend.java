@@ -14,23 +14,34 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.logging.Logger;
 
-public class Frontend extends HttpServlet implements Runnable {
-    private static int handleCount = 0;
+public class Frontend extends HttpServlet implements Subscriber, Runnable {
+    private MessageSystem messageSystem;
+    private Address address;
+    private Map<String, UserSession> sessionIdToUserSession = new HashMap<>();
+
+    private static AtomicLong handleCount = new AtomicLong(0);
     private static Logger log = Logger.getLogger(Frontend.class.getName());
 
-    private Map<String, Long> login_id = new HashMap<>();
-    private Map<String, String> login_password = new HashMap<>();
-
-    public Frontend() {
-        String[] users = {"user0", "user1", "user2"};
-
-        login_password.put(users[0], "user0pwd");
-        login_password.put(users[1], "user1pwd");
-        login_password.put(users[2], "user2pwd");
-        login_id.put(users[0], (long) 0);
-        login_id.put(users[1], (long) 1);
-        login_id.put(users[2], (long) 2);
+    public Frontend(MessageSystem messageSystem) {
+        this.messageSystem = messageSystem;
+        this.address = new Address();
+        // TODO: code something with address
     }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setId(String sessionId, Long userId) {
+        UserSession userSession = sessionIdToUserSession.get(sessionId);
+        if (userSession == null) {
+            System.out.append("Can't find user session for: ").append(sessionId);
+            return;
+        }
+        userSession.setUserId(userId);
+    }
+
+    // TODO: resume from here
 
     private String login = "";
     private String password;
@@ -45,7 +56,7 @@ public class Frontend extends HttpServlet implements Runnable {
 
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
-        handleCount++;
+        handleCount.incrementAndGet();
 
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
@@ -80,7 +91,7 @@ public class Frontend extends HttpServlet implements Runnable {
 
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response) throws ServletException, IOException {
-        handleCount++;
+        handleCount.incrementAndGet();
 
         login = request.getParameter("login");
         password = request.getParameter("password");
@@ -112,7 +123,6 @@ public class Frontend extends HttpServlet implements Runnable {
     }
 
 
-    @Override
     public void run() {
         while (true) {
             try {
@@ -126,4 +136,6 @@ public class Frontend extends HttpServlet implements Runnable {
 //          имеет ли смысл счетчик времени делать вне Frontend-а?
 //          почему, когда два таймера работают, +15 handle count?
     }
+
+
 }
