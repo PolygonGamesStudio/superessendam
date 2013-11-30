@@ -10,7 +10,20 @@ public class Address {
         this.abonentId = abonentIdCreator.incrementAndGet();
     }
 
-    public int getAddressHashCode() {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Address address = (Address) o;
+
+        if (abonentId != address.abonentId) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
         return abonentId;
     }
 }
