@@ -3,13 +3,15 @@ package server;
 public class UserSession {
     private Address address;
 
-    private String name;
+    private String login;
+    private String password;
     private String sessionId;
     private Long userId;
 
-    public UserSession(Address address, String name, String sessionId) {
-        this.address = address;
-        this.name = name;
+    public UserSession(AddressService addressService, String login, String password, String sessionId) {
+        this.address = addressService.getAddress();
+        this.login = login;
+        this.password = password;
         this.sessionId = sessionId;
     }
 
@@ -17,8 +19,8 @@ public class UserSession {
         return address;
     }
 
-    public String getName() {
-        return name;
+    public String getLogin() {
+        return login;
     }
 
     public String getSessionId() {
@@ -31,5 +33,9 @@ public class UserSession {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public boolean correctPassword(String externalPassword) {
+        return password.equals(externalPassword);
     }
 }

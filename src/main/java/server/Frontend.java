@@ -11,16 +11,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Logger;
 
 public class Frontend extends HttpServlet implements Subscriber, Runnable {
     private MessageSystem messageSystem;
     private Address address;
     private Map<String, UserSession> sessionIdToUserSession = new HashMap<>();
 
-    private static AtomicLong handleCount = new AtomicLong(0);
-    private static Logger log = Logger.getLogger(Frontend.class.getName());
+//    private static AtomicLong handleCount = new AtomicLong(0);
+//    private static Logger log = Logger.getLogger(Frontend.class.getLogin());
 
     public Frontend(MessageSystem messageSystem) {
         this.messageSystem = messageSystem;
@@ -43,9 +41,9 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
 
     // TODO: resume from here
 
-    private String login = "";
-    private String password;
-    private AtomicLong userIdGenerator = new AtomicLong();
+//    private String login = "";
+//    private String password;
+//    private AtomicLong userIdGenerator = new AtomicLong();
 
     public static String getTime() {
         Date date = new Date();
@@ -54,88 +52,84 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         return formatter.format(date);
     }
 
+    private void responseUserPage(HttpServletResponse response, String userState) throws IOException {
+        Map<String, Object> pageVariables = new HashMap<>();
+        pageVariables.put("refreshPeriod", "1000");
+        pageVariables.put("serverTime", getTime());
+        pageVariables.put("userState", userState);
+        response.getWriter().println(PageGenerator.getPage("timer.tml", pageVariables));
+    }
+
+    private void responseAuthPage(HttpServletResponse response, String userState) throws IOException {
+        Map<String, Object> pageVariables = new HashMap<>();
+        pageVariables.put("userState", userState);
+        response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
+    }
+
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
-        handleCount.incrementAndGet();
+//        handleCount.incrementAndGet();
 
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
         HttpSession session = request.getSession();
-        Long sessionId = (Long) session.getAttribute("sessionId");
-        if (sessionId == null) {
-            sessionId = userIdGenerator.getAndIncrement();
-            session.setAttribute("sessionId", sessionId);
+        UserSession userSession = sessionIdToUserSession.get(session.getId());
+
+        if (request.getPathInfo().equals("/userid")) {
+            if (userSession == null) {
+                responseUserPage(response, "Auth error");
+                return;
+            }
+            if (userSession.getUserId() == null) {
+                responseUserPage(response, "Waitiing for authorization");
+            }
+            responseUserPage(response, "name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
         }
 
-        Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("sessionId", sessionId);
-        pageVariables.put("lastLogin", login);
-
-        Long id = (Long) session.getAttribute("userId");
-        if (id == null) {
-            pageVariables.put("userId", "knock-knock");
-        } else {
-            pageVariables.put("userId", id);
+        if (request.getPathInfo().equals("/auth")) {
+            if (userSession == null) {
+                responseAuthPage(response, "New session. Hello!");
+                return;
+            }
+            if (userSession.getUserId() == null) {
+                responseAuthPage(response, "I still don't know you");   // TODO: fix message here
+                return;
+            }
+            response.sendRedirect("/userid");
         }
-
-        if (request.getPathInfo().equals("/timer")) {
-            pageVariables.put("refreshPeriod", "1000");
-            pageVariables.put("serverTime", getTime());
-            response.getWriter().println(PageGenerator.getPage("timer.tml", pageVariables));
-            return;
-        }
-
-        response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
     }
 
     public void doPost(HttpServletRequest request,
                        HttpServletResponse response) throws ServletException, IOException {
-        handleCount.incrementAndGet();
-
-        login = request.getParameter("login");
-        password = request.getParameter("password");
+//        handleCount.incrementAndGet();
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
-        HttpSession session = request.getSession();
-        Long sessionId = (Long) session.getAttribute("sessionId");
-        if (sessionId == null) {
-            sessionId = userIdGenerator.getAndIncrement();
-            session.setAttribute("sessionId", sessionId);
-        }
+        if (request.getPathInfo().equals("/auth")) {
+            String login = request.getParameter("login");
+            String password = request.getParameter("password");
+            String sessionId = request.getSession().getId();
+            UserSession userSession = new UserSession(messageSystem.getAddressService(), login, password, sessionId);
 
-        Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("sessionId", sessionId);
-        pageVariables.put("lastLogin", login);
-        if (password.equals(login_password.get(login))) {
-            Long id = login_id.get(login);
-            pageVariables.put("userId", id);
-            session.setAttribute("userId", id);
-            pageVariables.put("refreshPeriod", "1000");
-            pageVariables.put("serverTime", getTime());
-//            response.getWriter().println(server.PageGenerator.getPage("timer.tml", pageVariables));
-            response.sendRedirect("/timer");
-        } else {
-            pageVariables.put("userId", "you shall not pass");
-            response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
+            Address frontendAddress = getAddress();
+            Address accountServiceAddress = userSession.getAddress();
+
+            // TODO: send message to specify whether user exists
+
+            if (userSession.correctPassword(password)) {
+                response.sendRedirect("/userid");
+            } else {
+                responseAuthPage(response, "Incorrect password");
+            }
         }
     }
-
 
     public void run() {
         while (true) {
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            log.info(String.valueOf(handleCount));
+            // TODO: execute massage system
+            // TODO: use time helper to sleep
+//            log.info(String.valueOf(handleCount));
         }
-//        Вопросы:
-//          имеет ли смысл счетчик времени делать вне Frontend-а?
-//          почему, когда два таймера работают, +15 handle count?
     }
-
-
 }
