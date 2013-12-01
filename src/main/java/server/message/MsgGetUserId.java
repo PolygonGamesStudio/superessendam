@@ -19,5 +19,6 @@ public class MsgGetUserId extends MsgToAS {
     void exec(AccountService accountService) {
         Long id = accountService.getUserId(name, password);
         accountService.getMessageSystem().sendMessage(new MsgUpdateUserId(getTo(), getFrom(), sessionId, id));
+//        здесь сообщение отправляется тому, от кого оно пришло
     }
 }

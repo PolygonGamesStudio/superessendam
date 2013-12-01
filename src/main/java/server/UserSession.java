@@ -4,15 +4,16 @@ public class UserSession {
     private Address address;
 
     private String login;
-    private String password;
+    //    private String password;
     private String sessionId;
     private Long userId;
     private boolean isAuthResponseFromServer;
 
-    public UserSession(Address address, String login, String password, String sessionId) {
+    //    public UserSession(Address address, String login, String password, String sessionId) {
+    public UserSession(Address address, String login, String sessionId) {
         this.address = address;
         this.login = login;
-        this.password = password;
+//        this.password = password;
         this.sessionId = sessionId;
         this.isAuthResponseFromServer = false;
     }

@@ -15,11 +15,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Frontend extends HttpServlet implements Subscriber, Runnable {
-    private MessageSystem messageSystem;
-    private Address address;
-    private Map<String, UserSession> sessionIdToUserSession = new HashMap<>();
+    private final MessageSystem messageSystem;
+    private final Address address;
+    private Map<String, UserSession> sessionIdToUserSession = new ConcurrentHashMap<>();
 
 //    private static AtomicLong handleCount = new AtomicLong(0);
 //    private static Logger log = Logger.getLogger(Frontend.class.getLogin());
@@ -44,7 +45,7 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         userSession.setAuthResponseFromServer();
     }
 
-    public static String getTime() {
+    private static String getTime() {
         Date date = new Date();
         date.getTime();
         DateFormat formatter = new SimpleDateFormat("HH.mm.ss");
@@ -103,7 +104,6 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         if (request.getPathInfo().equals("/logout")) {
             String sessionId = request.getSession().getId();
             sessionIdToUserSession.put(sessionId, null);
-            ;
             response.sendRedirect("/");
         }
     }
@@ -118,7 +118,7 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
             String login = request.getParameter("login");
             String password = request.getParameter("password");
             String sessionId = request.getSession().getId();
-            UserSession userSession = new UserSession(messageSystem.getAddressService().getAddress(), login, password, sessionId);
+            UserSession userSession = new UserSession(messageSystem.getAddressService().getAddress(), login, sessionId);
             sessionIdToUserSession.put(sessionId, userSession);
 
             Address frontendAddress = getAddress();

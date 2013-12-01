@@ -11,8 +11,8 @@ import java.util.Map;
 public class AccountService implements Subscriber, Runnable {
 
     private class Account {
-        private String name;
-        private String pass;
+        private final String name;
+        private final String pass;
 
         private Account(String name, String pass) {
             this.name = name;
@@ -48,8 +48,8 @@ public class AccountService implements Subscriber, Runnable {
         }
     }
 
-    private Address address;
-    private MessageSystem messageSystem;
+    private final Address address;
+    private final MessageSystem messageSystem;
     private Map<Account, Long> accountStorage = new HashMap<>(); // Account --> User ID
 
     public AccountService(MessageSystem messageSystem) {

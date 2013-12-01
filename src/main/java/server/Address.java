@@ -3,11 +3,11 @@ package server;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Address {
-    static private AtomicInteger abonentIdCreator = new AtomicInteger();
-    final private int abonentId;
+    static private AtomicInteger subscriberIdCreator = new AtomicInteger();
+    final private int subscriberId;
 
     public Address() {
-        this.abonentId = abonentIdCreator.incrementAndGet();
+        this.subscriberId = subscriberIdCreator.incrementAndGet();
     }
 
     @Override
@@ -17,13 +17,13 @@ public class Address {
 
         Address address = (Address) o;
 
-        if (abonentId != address.abonentId) return false;
+        if (subscriberId != address.subscriberId) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return abonentId;
+        return subscriberId;
     }
 }
