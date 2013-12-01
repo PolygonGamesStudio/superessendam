@@ -1,12 +1,13 @@
 package server.message;
 
 import server.Address;
+import server.Subscriber;
 
-public abstract class Message {
+public abstract class Msg {
     private Address from;
     private Address to;
 
-    public Message(Address from, Address to) {
+    public Msg(Address from, Address to) {
         this.from = from;
         this.to = to;
     }
@@ -18,5 +19,7 @@ public abstract class Message {
     protected Address getTo() {
         return to;
     }
+
+    abstract void exec(Subscriber subscriber);
 
 }

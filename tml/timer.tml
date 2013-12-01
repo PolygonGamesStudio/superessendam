@@ -24,5 +24,6 @@
 <p>Client time: <span id='ClientTime'></span></p>
 <p>Server time: ${serverTime}</p>
 <p>User state: ${userState}</p>
+<p><a href="logout">Logout</a> </p>
 </body>
 </html>

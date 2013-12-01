@@ -7,12 +7,14 @@ public class UserSession {
     private String password;
     private String sessionId;
     private Long userId;
+    private boolean isAuthResponseFromServer;
 
-    public UserSession(AddressService addressService, String login, String password, String sessionId) {
-        this.address = addressService.getAddress();
+    public UserSession(Address address, String login, String password, String sessionId) {
+        this.address = address;
         this.login = login;
         this.password = password;
         this.sessionId = sessionId;
+        this.isAuthResponseFromServer = false;
     }
 
     public Address getAddress() {
@@ -35,7 +37,18 @@ public class UserSession {
         this.userId = userId;
     }
 
-    public boolean correctPassword(String externalPassword) {
-        return password.equals(externalPassword);
+    public void setAuthResponseFromServer() {
+        isAuthResponseFromServer = true;
     }
+
+    public boolean gotAuthResponse() {
+        return isAuthResponseFromServer;
+    }
+
+//    public void logout() {
+//        this.login = null;
+//        this.password = null;
+//        this.userId = null;
+//        this.isAuthResponseFromServer = false;
+//    }
 }

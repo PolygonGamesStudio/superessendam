@@ -6,12 +6,20 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import server.message.MessageSystem;
+import server.service.AccountService;
+import server.service.Frontend;
 
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        Frontend frontend = new Frontend();
+        MessageSystem messageSystem = new MessageSystem();
+
+        Frontend frontend = new Frontend(messageSystem);
+        AccountService accountService = new AccountService(messageSystem);
+
         (new Thread(frontend)).start();
+        (new Thread(accountService)).start();
 
 //        String workingDir = System.getProperty("user.dir"); // log относительно текущей директории
 //        ThreadPool threadPool = new ThreadPool(7, workingDir + "/static/log/server.log");

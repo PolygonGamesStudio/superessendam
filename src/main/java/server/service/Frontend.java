@@ -1,4 +1,8 @@
-package server;
+package server.service;
+
+import server.*;
+import server.message.MessageSystem;
+import server.message.MsgGetUserId;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -21,9 +25,9 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
 //    private static Logger log = Logger.getLogger(Frontend.class.getLogin());
 
     public Frontend(MessageSystem messageSystem) {
-        this.messageSystem = messageSystem;
         this.address = new Address();
-        // TODO: code something with address
+        this.messageSystem = messageSystem;
+        messageSystem.addService(this);
     }
 
     public Address getAddress() {
@@ -37,13 +41,8 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
             return;
         }
         userSession.setUserId(userId);
+        userSession.setAuthResponseFromServer();
     }
-
-    // TODO: resume from here
-
-//    private String login = "";
-//    private String password;
-//    private AtomicLong userIdGenerator = new AtomicLong();
 
     public static String getTime() {
         Date date = new Date();
@@ -77,14 +76,12 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         UserSession userSession = sessionIdToUserSession.get(session.getId());
 
         if (request.getPathInfo().equals("/userid")) {
-            if (userSession == null) {
-                responseUserPage(response, "Auth error");
+            if (userSession == null || userSession.getUserId() == null) {
+                response.sendRedirect("/auth");
                 return;
             }
-            if (userSession.getUserId() == null) {
-                responseUserPage(response, "Waitiing for authorization");
-            }
             responseUserPage(response, "name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
+            return;
         }
 
         if (request.getPathInfo().equals("/auth")) {
@@ -93,10 +90,21 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
                 return;
             }
             if (userSession.getUserId() == null) {
-                responseAuthPage(response, "I still don't know you");   // TODO: fix message here
+                if (userSession.gotAuthResponse()) {
+                    responseAuthPage(response, "Incorrect user/password");
+                    return;
+                }
+                responseAuthPage(response, "Waiting for authorization");
                 return;
             }
             response.sendRedirect("/userid");
+        }
+
+        if (request.getPathInfo().equals("/logout")) {
+            String sessionId = request.getSession().getId();
+            sessionIdToUserSession.put(sessionId, null);
+            ;
+            response.sendRedirect("/");
         }
     }
 
@@ -110,25 +118,23 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
             String login = request.getParameter("login");
             String password = request.getParameter("password");
             String sessionId = request.getSession().getId();
-            UserSession userSession = new UserSession(messageSystem.getAddressService(), login, password, sessionId);
+            UserSession userSession = new UserSession(messageSystem.getAddressService().getAddress(), login, password, sessionId);
+            sessionIdToUserSession.put(sessionId, userSession);
 
             Address frontendAddress = getAddress();
             Address accountServiceAddress = userSession.getAddress();
 
-            // TODO: send message to specify whether user exists
+            messageSystem.sendMessage(new MsgGetUserId(frontendAddress, accountServiceAddress, login, password, sessionId));
 
-            if (userSession.correctPassword(password)) {
-                response.sendRedirect("/userid");
-            } else {
-                responseAuthPage(response, "Incorrect password");
-            }
+            response.sendRedirect("/userid");
         }
     }
 
+
     public void run() {
         while (true) {
-            // TODO: execute massage system
-            // TODO: use time helper to sleep
+            messageSystem.execForSubscriber(this);
+            TimeHelper.sleep(100);
 //            log.info(String.valueOf(handleCount));
         }
     }

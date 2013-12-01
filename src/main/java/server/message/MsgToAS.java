@@ -1,10 +1,10 @@
 package server.message;
 
-import server.AccountService;
 import server.Address;
 import server.Subscriber;
+import server.service.AccountService;
 
-public abstract class MsgToAS extends Message {
+public abstract class MsgToAS extends Msg {
 
     public MsgToAS(Address from, Address to) {
         super(from, to);
