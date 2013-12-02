@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Frontend extends HttpServlet implements Subscriber, Runnable {
-    private final MessageSystem messageSystem;
+    private MessageSystem messageSystem;
     private final Address address;
     private Map<String, UserSession> sessionIdToUserSession = new ConcurrentHashMap<>();
 
@@ -103,7 +103,8 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
 
         if (request.getPathInfo().equals("/logout")) {
             String sessionId = request.getSession().getId();
-            sessionIdToUserSession.put(sessionId, null);
+            if (sessionIdToUserSession.get(sessionId) != null)
+                sessionIdToUserSession.remove(sessionId);
             response.sendRedirect("/");
         }
     }
