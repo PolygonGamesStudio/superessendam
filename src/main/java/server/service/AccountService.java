@@ -5,6 +5,10 @@ import server.Subscriber;
 import server.TimeHelper;
 import server.message.MessageSystem;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +65,31 @@ public class AccountService implements Subscriber, Runnable {
         this.accountStorage.put(new Account("user0", "pass0"), 0L);
         this.accountStorage.put(new Account("user1", "pass1"), 1L);
         this.accountStorage.put(new Account("user2", "pass2"), 2L);
+
+//        //TODO: from here
+//        Driver driver = null;
+//        try {
+//            driver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
+//        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+//            e.printStackTrace();
+//            // TODO: handle exception here
+//        }
+//        try {
+//            DriverManager.registerDriver(driver);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            // TODO: handle exception here
+//        }
+//        StringBuilder url = new StringBuilder();
+//        url.append("localhost");
+//
+//        Connection connection = null;
+//        try {
+//            connection = DriverManager.getConnection(url.toString());
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            // TODO: handle exception here
+//        }
 
     }
 

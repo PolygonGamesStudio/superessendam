@@ -21,6 +21,7 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
     private MessageSystem messageSystem;
     private final Address address;
     private Map<String, UserSession> sessionIdToUserSession = new ConcurrentHashMap<>();
+    private Map<Integer, UserSession> userIdToUserSession = new ConcurrentHashMap<>();
 
 //    private static AtomicLong handleCount = new AtomicLong(0);
 //    private static Logger log = Logger.getLogger(Frontend.class.getLogin());

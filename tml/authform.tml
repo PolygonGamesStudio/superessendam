@@ -15,20 +15,20 @@
         <div class="control-group">
             <div class="controls">
                 <div class="input-prepend">
-                    <span class="add-on"><i class="icon-user"></i></span> <input style='height: 29.5px' placeholder="Username" type="text" name="login"/>
+                    <span class="add-on"><i class="icon-user"></i></span> <input id="login" style='height: 29.5px' placeholder="Username" type="text" name="login"/>
                 </div>
             </div>
         </div>
         <div class="control-group">
             <div class="controls">
                 <div class="input-prepend">
-                    <span class="add-on"><i class="icon-lock"></i></span><input style='height: 29px' type="password" name="password" placeholder="Password"/>
+                    <span class="add-on"><i class="icon-lock"></i></span><input id="password" style='height: 29px' type="password" name="password" placeholder="Password"/>
                 </div>
             </div>
         </div>
         <div class="form-actions">
-            <span class="pull-left" style="margin-right: 5px">User session: ${userState}</span>
-            <span class="pull-right"><input type="submit" class="btn btn-inverse" value="Login"/></span>
+            <span id="message" class="pull-left" style="margin-right: 5px">User session: ${userState}</span>
+            <span class="pull-right"><input id="submitLogin" type="submit" class="btn btn-inverse" value="Login"/></span>
         </div>
     </form>
 
