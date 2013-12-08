@@ -10,7 +10,7 @@ import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainer
 import server.message.MessageSystem;
 import server.service.AccountService;
 import server.service.Frontend;
-import server.socket.ChatSocket;
+import server.socket.ChatSocketWithUserAgentToken;
 
 import javax.websocket.server.ServerContainer;
 
@@ -45,7 +45,7 @@ public class Main {
         try {
             ServerContainer wsContainer = WebSocketServerContainerInitializer.configureContext(context);
 
-            wsContainer.addEndpoint(ChatSocket.class);
+            wsContainer.addEndpoint(ChatSocketWithUserAgentToken.class);
         }
         catch (Throwable throwable) {
             throwable.printStackTrace(System.err);

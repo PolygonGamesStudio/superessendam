@@ -9,11 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @ClientEndpoint
 //@ServerEndpoint(value = "/chat/{room-name}")
-@ServerEndpoint(value = "/chat")
-public class ChatSocket {
-    private static final Map<String, ChatSocket> sockets = new ConcurrentHashMap<>();
+@ServerEndpoint(value = "/chat", configurator = GetUserAgentConfigurator.class)
+public class ChatSocketWithUserAgent {
+    private static final Map<String, ChatSocketWithUserAgent> sockets = new ConcurrentHashMap<>();
     private Session session;
     private String userId;
+    private String userAgent;
 
     private String getId() {
         return Integer.toHexString(this.hashCode());
@@ -29,7 +30,7 @@ public class ChatSocket {
     }
 
     private void broadcast(String message) {
-        for (ChatSocket chatSocket : sockets.values()) {
+        for (ChatSocketWithUserAgent chatSocket : sockets.values()) {
             if (chatSocket == this)
                 continue;
             chatSocket.sendToClient(message);
@@ -42,10 +43,20 @@ public class ChatSocket {
         this.session = session;
         this.userId = this.getId();
 
-        ChatSocket.sockets.put(userId, this);
+        ChatSocketWithUserAgent.sockets.put(userId, this);
         this.sendToClient("Hello, user " + this.userId);
         this.broadcast("New user appeared: user " + this.userId);
 
+
+        this.userAgent = (String) config.getUserProperties().get("User-Agent");
+
+
+        if (this.userAgent.equals("mobile")) {
+            this.sendToClient("you are mobile");
+        }
+        else {
+            this.sendToClient("you are desktop");
+        }
     }
 
     @OnMessage
@@ -57,8 +68,8 @@ public class ChatSocket {
     @OnClose
     public void onWebSocketClose(CloseReason reason) {
         System.out.println("Socket closed because: " + reason);
-        if (ChatSocket.sockets.containsKey(this.userId)) {
-            ChatSocket.sockets.remove(this.userId);
+        if (ChatSocketWithUserAgent.sockets.containsKey(this.userId)) {
+            ChatSocketWithUserAgent.sockets.remove(this.userId);
             this.broadcast("User " + this.userId + " has left...");
         }
     }
