@@ -14,6 +14,7 @@ import java.sql.SQLException;
 
 public class AccountService implements Subscriber, Runnable {
 
+    // dead code?
     private class Account {
         private final String name;
         private final String pass;
@@ -51,6 +52,7 @@ public class AccountService implements Subscriber, Runnable {
             return result;
         }
     }
+    // end dead code TODO: test code
 
     private final Address address;
     private final MessageSystem messageSystem;
