@@ -11,3 +11,5 @@
 4.1 hardcoded values to file
 
 5. GameMechanics
+
+6. переделать doGet и doPost, используя switch

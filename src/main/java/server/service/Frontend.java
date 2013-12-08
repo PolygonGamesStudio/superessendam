@@ -67,6 +67,12 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
     }
 
+    private void responseChatPage(HttpServletResponse response, String userState) throws IOException {
+        Map<String, Object> pageVariables = new HashMap<>();
+        pageVariables.put("userState", userState);
+        response.getWriter().println(PageGenerator.getPage("chat.tml", pageVariables));
+    }
+
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
 //        handleCount.incrementAndGet();
@@ -83,6 +89,11 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
                 return;
             }
             responseUserPage(response, "name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
+            return;
+        }
+
+        if (request.getPathInfo().equals("/chat")) {
+            responseChatPage(response, "nothing");
             return;
         }
 

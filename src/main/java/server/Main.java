@@ -6,9 +6,13 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import server.message.MessageSystem;
 import server.service.AccountService;
 import server.service.Frontend;
+import server.socket.ChatSocket;
+
+import javax.websocket.server.ServerContainer;
 
 public class Main {
 
@@ -36,6 +40,15 @@ public class Main {
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[]{resource_handler, context});
         server.setHandler(handlers);
+
+        try {
+            ServerContainer wsContainer = WebSocketServerContainerInitializer.configureContext(context);
+
+            wsContainer.addEndpoint(ChatSocket.class);
+        }
+        catch (Throwable throwable) {
+            throwable.printStackTrace(System.err);
+        }
 
         server.start();
         server.join();
