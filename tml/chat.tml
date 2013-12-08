@@ -13,8 +13,8 @@
     </form>
 <script>
 
-    ws = new WebSocket("ws://localhost:8080/chat");
 
+    var ws = new WebSocket("ws://localhost:8080/chat");
     // страница навешивает на новый объект три колл-бека:
 
     // первый вызовется, когда соединение будет установлено:

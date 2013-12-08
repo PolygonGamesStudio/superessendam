@@ -1,17 +1,20 @@
 package server.socket;
 
 import javax.websocket.*;
+import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @ClientEndpoint
-@ServerEndpoint(value = "/chat")
+//@ServerEndpoint(value = "/chat/{room-name}")
+@ServerEndpoint(value = "/chat", configurator = GetUserAgentConfigurator.class)
 public class ChatSocket {
     private static final Map<String, ChatSocket> sockets = new ConcurrentHashMap<>();
     private Session session;
     private String userId;
+    private String userAgent;
 
     private String getId() {
         return Integer.toHexString(this.hashCode());
@@ -35,7 +38,7 @@ public class ChatSocket {
     }
 
     @OnOpen
-    public void onWebSocketConnect(Session session) {
+    public void onWebSocketConnect(Session session, @PathParam("room-name") String roomName, EndpointConfig config) {
         System.out.println("Socket connected: " + session);
         this.session = session;
         this.userId = this.getId();
@@ -43,6 +46,17 @@ public class ChatSocket {
         ChatSocket.sockets.put(userId, this);
         this.sendToClient("Hello, user " + this.userId);
         this.broadcast("New user appeared: user " + this.userId);
+
+
+        this.userAgent = (String) config.getUserProperties().get("User-Agent");
+
+
+        if (this.userAgent.equals("mobile")) {
+            this.sendToClient("you are mobile");
+        }
+        else {
+            this.sendToClient("you are desktop");
+        }
     }
 
     @OnMessage
