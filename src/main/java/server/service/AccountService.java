@@ -3,6 +3,9 @@ package server.service;
 import server.Address;
 import server.Subscriber;
 import server.TimeHelper;
+import server.dao.ConnectDB;
+import server.dao.UsersDAO;
+import server.dao.UsersDataSet;
 import server.message.MessageSystem;
 
 import java.sql.Connection;
@@ -62,9 +65,9 @@ public class AccountService implements Subscriber, Runnable {
         messageSystem.addService(this);
         messageSystem.getAddressService().setAddress(address);
 
-        this.accountStorage.put(new Account("user0", "pass0"), 0L);
-        this.accountStorage.put(new Account("user1", "pass1"), 1L);
-        this.accountStorage.put(new Account("user2", "pass2"), 2L);
+//        this.accountStorage.put(new Account("user0", "pass0"), 0L);
+//        this.accountStorage.put(new Account("user1", "pass1"), 1L);
+//        this.accountStorage.put(new Account("user2", "pass2"), 2L);
 
 //        //TODO: from here
 //        Driver driver = null;
@@ -101,8 +104,19 @@ public class AccountService implements Subscriber, Runnable {
     }
 
     public Long getUserId(String login, String password) {
-        TimeHelper.sleep(5000);
-        return accountStorage.get(new Account(login, password));
+        //TimeHelper.sleep(5000);
+        Connection connection = ConnectDB.getConnection();
+        UsersDAO userDAO = new UsersDAO(connection);
+        try
+        {
+            UsersDataSet result = userDAO.get(login, password);
+            return result.getId();
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public Address getAddress() {
