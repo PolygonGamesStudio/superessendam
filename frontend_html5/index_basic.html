@@ -186,7 +186,7 @@
         //cross browser issues exist
         if(!e){ var e = window.event; }
         switch(e.keyCode) {
-            case KEYCODE_S: bmpAnimation.y += bmpAnimation.vY; return false;
+            case KEYCODE_S: bmpAnimation.y += bmpAnimation.vY; bmpAnimation.gotoAndPlay("walk_h"); return false;
             case KEYCODE_A: bmpAnimation.x -= bmpAnimation.vX; return false;
             case KEYCODE_D: bmpAnimation.x += bmpAnimation.vX; return false;
             case KEYCODE_W: bmpAnimation.y -= bmpAnimation.vY; return false;
