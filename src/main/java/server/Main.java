@@ -41,6 +41,7 @@ public class Main {
         handlers.setHandlers(new Handler[]{resource_handler, context});
         server.setHandler(handlers);
 
+        // socket realization from here on...
         try {
             ServerContainer wsContainer = WebSocketServerContainerInitializer.configureContext(context);
 
