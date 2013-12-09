@@ -10,6 +10,7 @@ import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainer
 import server.message.MessageSystem;
 import server.service.AccountService;
 import server.service.Frontend;
+import server.service.GameMechanics;
 import server.socket.ChatSocketWithUserAgentToken;
 
 import javax.websocket.server.ServerContainer;
@@ -21,9 +22,11 @@ public class Main {
 
         Frontend frontend = new Frontend(messageSystem);
         AccountService accountService = new AccountService(messageSystem);
+        GameMechanics gameMechanics = new GameMechanics(messageSystem);
 
         (new Thread(frontend)).start();
         (new Thread(accountService)).start();
+        (new Thread(gameMechanics)).start();
 
 //        String workingDir = System.getProperty("user.dir"); // log относительно текущей директории
 //        ThreadPool threadPool = new ThreadPool(7, workingDir + "/static/log/server.log");
