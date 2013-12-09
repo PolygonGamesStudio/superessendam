@@ -14,46 +14,6 @@ import java.sql.SQLException;
 
 public class AccountService implements Subscriber, Runnable {
 
-    // dead code?
-    private class Account {
-        private final String name;
-        private final String pass;
-
-        private Account(String name, String pass) {
-            this.name = name;
-            this.pass = pass;
-        }
-
-        private String getName() {
-            return name;
-        }
-
-        private String getPass() {
-            return pass;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Account account = (Account) o;
-
-            if (!name.equals(account.name)) return false;
-            if (!pass.equals(account.pass)) return false;
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = name.hashCode();
-            result = 31 * result + pass.hashCode();
-            return result;
-        }
-    }
-    // end dead code TODO: test code
-
     private final Address address;
     private final MessageSystem messageSystem;
 
@@ -73,7 +33,7 @@ public class AccountService implements Subscriber, Runnable {
     }
 
     public Long getUserId(String login, String password) {
-        //TimeHelper.sleep(5000);
+        TimeHelper.sleep(1000);
         Connection connection = ConnectDB.getConnection();
         UsersDAO userDAO = new UsersDAO(connection);
         try
