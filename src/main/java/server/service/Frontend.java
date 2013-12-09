@@ -72,6 +72,11 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         pageVariables.put("userState", userState);
         response.getWriter().println(PageGenerator.getPage("chat.tml", pageVariables));
     }
+    private void responseMobilePage(HttpServletResponse response, String userState) throws IOException {
+        Map<String, Object> pageVariables = new HashMap<>();
+        pageVariables.put("userState", userState);
+        response.getWriter().println(PageGenerator.getPage("mobile.tml", pageVariables));
+    }
 
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException, IOException {
@@ -94,6 +99,10 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
 
         if (request.getPathInfo().equals("/chat")) {
             responseChatPage(response, "nothing");
+            return;
+        }
+        if (request.getPathInfo().equals("/mobile")) {
+            responseMobilePage(response, "nothing");
             return;
         }
 
