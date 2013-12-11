@@ -12,6 +12,7 @@ import server.service.AccountService;
 import server.service.Frontend;
 import server.service.GameMechanics;
 import server.socket.ChatSocketWithUserAgentToken;
+import server.socket.PingPongSocket;
 
 import javax.websocket.server.ServerContainer;
 
@@ -49,6 +50,7 @@ public class Main {
             ServerContainer wsContainer = WebSocketServerContainerInitializer.configureContext(context);
 
             wsContainer.addEndpoint(ChatSocketWithUserAgentToken.class);
+            wsContainer.addEndpoint(PingPongSocket.class);
         }
         catch (Throwable throwable) {
             throwable.printStackTrace(System.err);

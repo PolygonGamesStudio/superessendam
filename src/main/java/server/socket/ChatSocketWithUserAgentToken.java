@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-@ClientEndpoint
-//@ServerEndpoint(value = "/chat/{room-name}")
 @ServerEndpoint(value = "/chat", configurator = GetUserAgentConfigurator.class)
 public class ChatSocketWithUserAgentToken {
 
@@ -64,7 +62,7 @@ public class ChatSocketWithUserAgentToken {
         this.userAgent = (String) config.getUserProperties().get("User-Agent");
 
 
-        if (this.userAgent.equals("mobile")) {
+        if (this.userAgent.contains("Android")) {
             this.sendToClient("you are mobile");
             this.sendToClient("Enter token:");
         }

@@ -72,10 +72,16 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         pageVariables.put("userState", userState);
         response.getWriter().println(PageGenerator.getPage("chat.tml", pageVariables));
     }
-    private void responseMobilePage(HttpServletResponse response, String userState) throws IOException {
+    // TODO: master slave
+    private void responseMasterPage(HttpServletResponse response) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("userState", userState);
-        response.getWriter().println(PageGenerator.getPage("mobile.tml", pageVariables));
+        pageVariables.put("nothing", "nothing");
+        response.getWriter().println(PageGenerator.getPage("master.tml", pageVariables));
+    }
+    private void responseSlavePage(HttpServletResponse response) throws IOException {
+        Map<String, Object> pageVariables = new HashMap<>();
+        pageVariables.put("nothing", "nothing");
+        response.getWriter().println(PageGenerator.getPage("slave.tml", pageVariables));
     }
 
     public void doGet(HttpServletRequest request,
@@ -101,8 +107,13 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
             responseChatPage(response, "nothing");
             return;
         }
-        if (request.getPathInfo().equals("/mobile")) {
-            responseMobilePage(response, "nothing");
+        // TODO: master slave
+        if (request.getPathInfo().equals("/master")) {
+            responseMasterPage(response);
+            return;
+        }
+        if (request.getPathInfo().equals("/slave")) {
+            responseSlavePage(response);
             return;
         }
 
