@@ -15,12 +15,12 @@ public class AuthorizationTest {
     private static final String AUTH_URL = "http://localhost:8080/auth";
     private static final String USER_ID_URL = "http://localhost:8080/user_id";
 
-    WebDriver driver;
+    private WebDriver driver;
 
     @Before
     public void setUp() {
         System.out.println("before");
-        driver = new FirefoxDriver();
+        driver = new ChromeDriver();
         driver.get("http://www.google.com");
     }
 
