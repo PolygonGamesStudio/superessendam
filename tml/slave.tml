@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="css/style.css" media="screen"/>
+</head>
+<body>
+<canvas id="canvas" width="480" height="600"></canvas>
+<div id="temp"></div>
+<script src="js/pingPong.js"></script>
+<!--<script src="js/temp.js"></script>-->
+</body>
+</html>

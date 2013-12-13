@@ -18,12 +18,18 @@
         function refresh() {
             location.reload();
         }
+
+
+
     </script>
 </head>
 <body onload='setInterval(function(){refresh()}, ${refreshPeriod} ); setClientTime();'>
 <p>Client time: <span id='ClientTime'></span></p>
+
 <p>Server time: ${serverTime}</p>
-<p>User state: ${userState}</p>
-<p><a href="logout">Logout</a> </p>
+
+<p id="state">User state: ${userState}</p>
+
+<p><a href="logout">Logout</a></p>
 </body>
 </html>

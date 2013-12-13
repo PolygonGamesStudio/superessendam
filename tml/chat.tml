@@ -1,0 +1,43 @@
+<html>
+<head>
+	<title>Статика</title>
+</head>
+<body>
+<h1>El CHATO:</h1>
+<br/>
+    <div id="chatbox" style="font-size: 14pt; height: 500px; width: 800px; overflow: scroll; border: 1px solid black"></div>
+<br/>
+    <form id="conversation" onsubmit="DispatchText()" action="javascript:void(0);">
+                <input type="text" id="message" name="message" autocomplete="off" style="width:700px" />
+                <input type="submit" id="sub" name="sub" value="Send" style="width:90px" />
+    </form>
+<script>
+
+
+    var ws = new WebSocket("ws://localhost:8080/chat");
+    // страница навешивает на новый объект три колл-бека:
+
+    // первый вызовется, когда соединение будет установлено:
+    ws.onopen = function() { alert("Connection opened...") };
+
+    // второй - когда соединено закроется
+    ws.onclose = function() { alert("Connection closed...") };
+
+    // и, наконец, третий - каждый раз, когда браузер получает какие-то данные через веб-сокет
+    ws.onmessage = function(evt) {
+         x = document.createElement("p");
+         x.innerHTML = evt.data;
+         document.getElementById("chatbox").appendChild(x);
+    };
+
+    function DispatchText(){
+        var userInput = document.getElementById("message").value;
+        document.getElementById("message").value = "";
+        x = document.createElement("p");
+        x.innerHTML = "You sent: " + userInput;
+        document.getElementById("chatbox").appendChild(x);
+        ws.send(userInput);
+    }
+
+</script>
+</body>
