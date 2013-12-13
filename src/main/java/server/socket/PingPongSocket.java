@@ -55,8 +55,9 @@ public class PingPongSocket {
     public void onWebSocketMessage(String message) {
         System.out.println("Received roatation: " + message);
 
-        String response = null; // TODO: add response
-        this.broadcast(response);
+//        String response = null; // TODO: add response
+//        this.broadcast(response);
+        this.broadcast(message);
     }
 
     @OnClose

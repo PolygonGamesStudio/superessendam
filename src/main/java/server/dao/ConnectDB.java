@@ -19,19 +19,13 @@ public class ConnectDB {
                     append("3306/").				//port
                     append("gameJavaDB?").			//db name
                     append("user=root&").			//login
-                    append("password=root");		//password
+                    append("password=1fear1");        //password
 
             System.out.append("URL: " + url + "\n");
 
             Connection connection = DriverManager.getConnection(url.toString());
             return connection;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -41,10 +35,10 @@ public class ConnectDB {
         Connection connection = getConnection();
         System.out.append("Connected!\n");
         try {
-            System.out.append("Autocommit: " + connection.getAutoCommit() + '\n');
-            System.out.append("DB name: " + connection.getMetaData().getDatabaseProductName() + '\n');
-            System.out.append("DB version: " + connection.getMetaData().getDatabaseProductVersion() + '\n');
-            System.out.append("Driver: " + connection.getMetaData().getDriverName() + '\n');
+            System.out.println("Autocommit: " + connection.getAutoCommit());
+            System.out.println("DB name: " + connection.getMetaData().getDatabaseProductName());
+            System.out.println("DB version: " + connection.getMetaData().getDatabaseProductVersion());
+            System.out.println("Driver: " + connection.getMetaData().getDriverName());
             connection.close();
         } catch (SQLException e) {
             e.printStackTrace();

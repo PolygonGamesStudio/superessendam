@@ -9,8 +9,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <!--<properties>-->
-        <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
-        <!--<webdriver.driver>firefox</webdriver.driver>-->
+    <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
+    <!--<webdriver.driver>firefox</webdriver.driver>-->
     <!--</properties>-->
 
     <dependencies>
@@ -37,18 +37,13 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.25.0</version>
+            <version>2.37.1</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.1</version>
+            <version>4.11</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-firefox-driver</artifactId>
-            <version>2.25.0</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>

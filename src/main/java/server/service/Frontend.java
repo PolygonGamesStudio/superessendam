@@ -21,7 +21,7 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
     private MessageSystem messageSystem;
     private final Address address;
     private Map<String, UserSession> sessionIdToUserSession = new ConcurrentHashMap<>();
-    private Map<Integer, UserSession> userIdToUserSession = new ConcurrentHashMap<>();
+//    private Map<Integer, UserSession> userIdToUserSession = new ConcurrentHashMap<>();
 
 //    private static AtomicLong handleCount = new AtomicLong(0);
 //    private static Logger log = Logger.getLogger(Frontend.class.getLogin());
@@ -67,17 +67,19 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
     }
 
-    private void responseChatPage(HttpServletResponse response, String userState) throws IOException {
+    private void responseChatPage(HttpServletResponse response) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("userState", userState);
+        pageVariables.put("userState", "nothing");
         response.getWriter().println(PageGenerator.getPage("chat.tml", pageVariables));
     }
+
     // TODO: master slave
     private void responseMasterPage(HttpServletResponse response) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("nothing", "nothing");
         response.getWriter().println(PageGenerator.getPage("master.tml", pageVariables));
     }
+
     private void responseSlavePage(HttpServletResponse response) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("nothing", "nothing");
@@ -104,10 +106,9 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         }
 
         if (request.getPathInfo().equals("/chat")) {
-            responseChatPage(response, "nothing");
+            responseChatPage(response);
             return;
         }
-        // TODO: master slave
         if (request.getPathInfo().equals("/master")) {
             responseMasterPage(response);
             return;

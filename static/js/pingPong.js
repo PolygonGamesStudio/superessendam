@@ -48,8 +48,36 @@ var canvas = document.getElementById("canvas"),
     init, // variable to initialize animation
     paddleHit;
 
+var ws = new WebSocket("ws://localhost:8080/ping");
+// страница навешивает на новый объект три колл-бека:
+
+// первый вызовется, когда соединение будет установлено:
+ws.onopen = function() { alert("Connection opened...") };
+
+// второй - когда соединено закроется
+ws.onclose = function() { alert("Connection closed...") };
+
+// и, наконец, третий - каждый раз, когда браузер получает какие-то данные через веб-сокет
+ws.onmessage = function(evt) {
+    if (evt.data == "gameON") {
+
+    }
+
+    else {
+        var delta = Math.round(W/300);
+
+        mouse.x = Math.round(W/2) + Math.round(parseFloat(evt.data)) * delta;
+        mouse.y = 1;
+
+        var x = document.createElement("p");
+        x.innerHTML = "mouse.x: " + mouse.x;
+        document.getElementById("temp").appendChild(x);
+    }
+};
+
+
 // Add mousemove and mousedown events to the canvas
-canvas.addEventListener("mousemove", trackPosition, true);
+//canvas.addEventListener("mousemove", trackPosition, true);
 canvas.addEventListener("mousedown", btnClick, true);
 
 // Initialise the collision sound
@@ -69,7 +97,7 @@ function paintCanvas() {
 function Paddle(pos) {
     // Height and width
     this.h = 5;
-    this.w = 150;
+    this.w = 300;
 
     // Paddle's position
     this.x = W/2 - this.w/2;
@@ -87,8 +115,10 @@ ball = {
     y: 50,
     r: 5,
     c: "white",
-    vx: 4,
-    vy: 8,
+//    vx: 4,
+//    vy: 8,
+    vx: 1,
+    vy: 2,
 
     // Function for drawing ball on canvas
     draw: function() {
@@ -167,12 +197,12 @@ function draw() {
 
 // Function to increase speed after every 5 points
 function increaseSpd() {
-    if(points % 4 == 0) {
-        if(Math.abs(ball.vx) < 15) {
-            ball.vx += (ball.vx < 0) ? -1 : 1;
-            ball.vy += (ball.vy < 0) ? -2 : 2;
-        }
-    }
+//    if(points % 4 == 0) {
+//        if(Math.abs(ball.vx) < 15) {
+//            ball.vx += (ball.vx < 0) ? -1 : 1;
+//            ball.vy += (ball.vy < 0) ? -2 : 2;
+//        }
+//    }
 }
 
 // Track the position of mouse cursor
@@ -391,8 +421,10 @@ function btnClick(e) {
             ball.x = 20;
             ball.y = 20;
             points = 0;
-            ball.vx = 4;
-            ball.vy = 8;
+//            ball.vx = 4;
+//            ball.vy = 8;
+            ball.vx = 1;
+            ball.vy = 2;
             animloop();
 
             over = 0;
