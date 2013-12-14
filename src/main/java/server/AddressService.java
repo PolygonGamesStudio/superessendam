@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class AddressService {
     private Map<String, Address> addressByName; // TODO: Address in List
 
-    public AddressService(Map<String, Address> addressByName) {
+    public AddressService() {
         this.addressByName = new ConcurrentHashMap<>(); // FIXME: ConcurrentHashMap or HashMap
     }
 

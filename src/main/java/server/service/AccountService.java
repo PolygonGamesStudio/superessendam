@@ -33,7 +33,7 @@ public class AccountService implements Subscriber, Runnable {
     }
 
     public Long getUserId(String login, String password) {
-        TimeHelper.sleep(5000);
+        TimeHelper.sleep(500);
         Connection connection = ConnectDB.getConnection();
         UsersDAO userDAO = new UsersDAO(connection);
         try

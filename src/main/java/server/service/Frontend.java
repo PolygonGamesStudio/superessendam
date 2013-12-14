@@ -1,19 +1,17 @@
 package server.service;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import server.*;
 import server.message.MessageSystem;
 import server.message.MsgGetUserId;
-import server.message.MsgSendEvent;
-import server.socket.FrontendConfigurator;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-@ServerEndpoint(value = "/gamemechanics", configurator = FrontendConfigurator.class)
+@ServerEndpoint(value = "/gamemechanics")
 public class Frontend extends HttpServlet implements Subscriber, Runnable {
     private MessageSystem messageSystem;
     private final Address address;
@@ -38,17 +36,19 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
     // WARNING Должно быть в топе, или doGet "сьест" сокет  и он не будет работать
     @OnOpen
     public void onWebSocketConnect(Session session, EndpointConfig config) {
-        UserSession userSession = idToUserSession.get(config.getUserProperties().get("session"));
+//        UserSession userSession = idToUserSession.get(config.getUserProperties().get("session"));
         System.out.println("Socket connected: " + session);
     }
 
     @OnMessage
-    public void onWebSocketMessage(String message) {
-        System.out.println("FE Received message: " + message);
-        sessionIdToUserSession.get(sessionId, userSession);
-        Address frontendAddress = getAddress();
-        Address gameMechanicsAddress = userSession.getAddressGM();
-        messageSystem.sendMessage(new MsgSendEvent(frontendAddress, accountServiceAddress, message));
+    public void onWebSocketMessage(String message) throws JSONException {
+        JSONObject jsonObject = new JSONObject(message);
+        System.out.println("            id: " + jsonObject.getString("id"));
+        System.out.println("       message: " + jsonObject.getString("message"));
+//        sessionIdToUserSession.get(sessionId, userSession);
+//        Address frontendAddress = getAddress();
+//        Address gameMechanicsAddress = userSession.getAddressGM();
+//        messageSystem.sendMessage(new MsgSendEvent(frontendAddress, accountServiceAddress, message));
 
     }
 
@@ -137,6 +137,8 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
                 response.sendRedirect("/auth");
                 return;
             }
+            Cookie userCookie = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
+            response.addCookie(userCookie); // FIXME: hash userSession.getUserId() + salt
             responseUserPage(response, "name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
             return;
         }
@@ -205,7 +207,6 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
 
             Address frontendAddress = getAddress();
             Address accountServiceAddress = userSession.getAddressFE();
-
             messageSystem.sendMessage(new MsgGetUserId(frontendAddress, accountServiceAddress, login, password, sessionId));
 
             response.sendRedirect("/userid");
