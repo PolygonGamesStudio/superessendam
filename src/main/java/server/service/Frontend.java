@@ -21,7 +21,8 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
     private MessageSystem messageSystem;
     private final Address address;
     private Map<String, UserSession> sessionIdToUserSession = new ConcurrentHashMap<>();
-//    private Map<Integer, UserSession> userIdToUserSession = new ConcurrentHashMap<>();
+    private Map<Integer, UserSession> userIdToUserSession = new ConcurrentHashMap<>();  // для удобного доступа к сессии
+    // нужно для игровой механики
 
 //    private static AtomicLong handleCount = new AtomicLong(0);
 //    private static Logger log = Logger.getLogger(Frontend.class.getLogin());
@@ -31,6 +32,17 @@ public class Frontend extends HttpServlet implements Subscriber, Runnable {
         this.messageSystem = messageSystem;
         messageSystem.addService(this);
     }
+
+//    @VisibleForTesting
+//    public Frontend() {
+//        this.address = new Address();
+//    }
+//
+//    @VisibleForTesting
+//    public void setMessageSystem(MessageSystem messageSystem) {
+//        this.messageSystem = messageSystem;
+//        messageSystem.addService(this);
+//    }
 
     public Address getAddress() {
         return address;
