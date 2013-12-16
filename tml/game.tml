@@ -23,6 +23,7 @@
         //alert('mes');
     };
     function handleKeyDown(e) {
+        ws.send('lalka');   // TODO: it work's
         //cross browser issues exist
         if(!e) { var e = window.event; }
         switch(e.keyCode) {

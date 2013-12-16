@@ -1,5 +1,6 @@
 package server.service;
 
+import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.servlet.*;
 import server.*;
 import server.base.Frontend;
@@ -11,6 +12,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.websocket.*;
+import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -205,13 +208,61 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     // TODO: fix WebSockets from here
     @Override
     public void configure(WebSocketServletFactory webSocketServletFactory) {
-        webSocketServletFactory.getPolicy().setIdleTimeout(10000);
+        webSocketServletFactory.getPolicy().setIdleTimeout(100000);
         webSocketServletFactory.setCreator(new WebSocketCreator() {
             @Override
             public Object createWebSocket(ServletUpgradeRequest servletUpgradeRequest, ServletUpgradeResponse servletUpgradeResponse) {
-                return null;
+//                return new GameSocket();
+                return new GMSocket();
             }
         });
+    }
+
+    private class GMSocket implements WebSocketListener {
+
+        @Override
+        public void onWebSocketBinary(byte[] payload, int offset, int len) {
+
+        }
+
+        @Override
+        public void onWebSocketClose(int statusCode, String reason) {
+
+        }
+
+        @Override
+        public void onWebSocketConnect(org.eclipse.jetty.websocket.api.Session session) {
+            System.out.println("opened");
+        }
+
+        @Override
+        public void onWebSocketError(Throwable cause) {
+            System.out.println("Cause: " + cause);
+        }
+
+        @Override
+        public void onWebSocketText(String message) {
+            System.out.println("received: " + message);
+        }
+    }
+
+    @ServerEndpoint("/gamemechanics")
+    private class GameSocket {
+        @OnOpen
+        public void onWebSocketConnect(Session session, EndpointConfig config) {
+            System.out.println("Socket connected: " + session);
+
+        }
+
+        @OnMessage
+        public void onWebSocketMessage(String message) {
+            System.out.println("Received message: " + message);
+        }
+
+        @OnClose
+        public void onWebSocketClose(CloseReason reason) {
+            System.out.println("Reason: " + reason);
+        }
     }
 
 //    @Override
