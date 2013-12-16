@@ -4,18 +4,15 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import server.service.AccountService;
-
-import java.lang.Exception;
+import server.service.AccountServiceImpl;
 
 import static org.mockito.Mockito.when;
 
 public class ASTest extends TestCase {
 
     @Mock
-    AccountService accountService;
+    AccountServiceImpl accountServiceImpl;
 
     @Before
     protected void setUp() throws Exception {
@@ -24,6 +21,6 @@ public class ASTest extends TestCase {
 
     @Test
     public void testAccountServiceGet() {
-        when(accountService.getUserId("user0", "pass0")).thenReturn((long) 0);
+        when(accountServiceImpl.getUserId("user0", "pass0")).thenReturn((long) 0);
     }
 }

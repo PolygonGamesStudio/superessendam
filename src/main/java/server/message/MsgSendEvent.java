@@ -1,7 +1,7 @@
 package server.message;
 
 import server.Address;
-import server.service.GameMechanics;
+import server.base.GameMechanics;
 
 public class MsgSendEvent extends MsgToGM {
     private String event;
@@ -13,8 +13,8 @@ public class MsgSendEvent extends MsgToGM {
 
 
     void exec(GameMechanics gameMechanics) {
-        gameMechanics.printStuff(this.event);
-//        gameMechanics.getMessageSystem().sendMessage(new MsgUpdateUserId(getTo(), getFrom(), sessionId, id));
+        gameMechanics.handleEvent(this.event);
+//        gameMechanicsImpl.getMessageSystem().sendMessage(new MsgUpdateUserId(getTo(), getFrom(), sessionId, id));
 //        здесь сообщение отправляется тому, от кого оно пришло
     }
 }

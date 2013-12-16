@@ -1,7 +1,7 @@
 package server.message;
 
 import server.Address;
-import server.service.AccountService;
+import server.base.AccountService;
 
 public class MsgGetUserId extends MsgToAS {
     private String name;

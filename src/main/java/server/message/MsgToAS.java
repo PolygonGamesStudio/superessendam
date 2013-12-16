@@ -2,7 +2,7 @@ package server.message;
 
 import server.Address;
 import server.Subscriber;
-import server.service.AccountService;
+import server.base.AccountService;
 
 public abstract class MsgToAS extends Msg {
 
@@ -16,5 +16,5 @@ public abstract class MsgToAS extends Msg {
         }
     }
 
-    abstract void exec(AccountService accountService);
+    abstract void exec(AccountService accountServiceImpl);
 }

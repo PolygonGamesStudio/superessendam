@@ -8,18 +8,18 @@ import java.sql.SQLException;
 public class ConnectDB {
 
     public static Connection getConnection() {
-        try{
+        try {
             DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
 
             StringBuilder url = new StringBuilder();
 
             url.
-                    append("jdbc:mysql://").		//db type
-                    append("localhost:"). 			//host name
-                    append("3306/").				//port
-                    append("gameJavaDB?").			//db name
-                    append("user=root&").			//login
-                    append("password=root");        //password
+                    append("jdbc:mysql://").        //db type
+                    append("localhost:").            //host name
+                    append("3306/").                //port
+                    append("gameJavaDB?").            //db name
+                    append("user=root&").            //login
+                    append("password=1fear1");      //password FIXME: change password
 
             System.out.append("URL: " + url + "\n");
 

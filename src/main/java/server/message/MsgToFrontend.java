@@ -2,7 +2,7 @@ package server.message;
 
 import server.Address;
 import server.Subscriber;
-import server.service.Frontend;
+import server.base.Frontend;
 
 public abstract class MsgToFrontend extends Msg {
     public MsgToFrontend(Address from, Address to) {

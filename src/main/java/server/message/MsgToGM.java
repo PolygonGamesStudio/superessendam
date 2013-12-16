@@ -2,7 +2,7 @@ package server.message;
 
 import server.Address;
 import server.Subscriber;
-import server.service.GameMechanics;
+import server.base.GameMechanics;
 
 public abstract class MsgToGM extends Msg {
     public MsgToGM(Address from, Address to) {

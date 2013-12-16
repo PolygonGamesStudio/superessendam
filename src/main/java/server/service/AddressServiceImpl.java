@@ -1,13 +1,16 @@
-package server;
+package server.service;
 
+
+import server.Address;
+import server.base.AddressService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AddressService {
+public class AddressServiceImpl implements AddressService {
     private Map<String, Address> addressByName; // TODO: Address in List
 
-    public AddressService() {
+    public AddressServiceImpl() {
         this.addressByName = new ConcurrentHashMap<>(); // FIXME: ConcurrentHashMap or HashMap
     }
 
