@@ -23,10 +23,18 @@ public class AddressServiceImpl implements AddressService {
     }
 
     public Address getAddressGM() {
-        return addressByName.get("gamemechanics");
+        return addressByName.get("gameMechanics");
     }
 
     public void setAddressGM(Address address) {
-        addressByName.put("gamemechanics", address);
+        addressByName.put("gameMechanics", address);
+    }
+
+    public void setAddressAS(Address address) {
+        addressByName.put("accountService", address);
+    }
+
+    public Address getAddressAS() {
+        return addressByName.get("accountService");
     }
 }

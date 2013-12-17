@@ -4,7 +4,7 @@
     <title>Игра</title>
 </head>
 <body>
-      Тут будет игра
+Тут будет игра
 </body>
 <script src="js/cookie.js"></script>
 <script>
@@ -23,16 +23,17 @@
         //alert('mes');
     };
     function handleKeyDown(e) {
-        ws.send('lalka');   // TODO: it work's
+        // TODO: it work's only in firefox; Chrome is not done
         //cross browser issues exist
         if(!e) { var e = window.event; }
         switch(e.keyCode) {
-            case KEYCODE_UP: mes = 'up'; ws.send(JSON.stringify({id: cookie.GetCookie('user_id'),message : mes})); return false;
+            case KEYCODE_UP: mes = 'up'; ws.send(JSON.stringify({"id": cookie.GetCookie('user_id'),"message" : mes})); return false;
             case KEYCODE_LEFT: mes = 'left'; ws.send(JSON.stringify({id: cookie.GetCookie('user_id'),message : mes})); return false;
             case KEYCODE_RIGHT: mes = 'right'; ws.send(JSON.stringify({id: cookie.GetCookie('user_id'),message : mes})); return false;
             case KEYCODE_DOWN: mes = 'down'; ws.send(JSON.stringify({id: cookie.GetCookie('user_id'),message : mes})); return false;
         };
     }
     window.addEventListener('keypress', handleKeyDown);
+
 </script>
 </html>

@@ -24,7 +24,7 @@ public class AccountServiceImpl implements Subscriber, Runnable, AccountService 
         this.address = new Address();
         this.messageSystem = messageSystem;
         messageSystem.addService(this);
-        messageSystem.getAddressService().setAddressFE(address);
+        messageSystem.getAddressService().setAddressAS(address);
 
     }
 

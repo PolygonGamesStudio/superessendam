@@ -21,7 +21,7 @@ public class GameMechanicsImpl implements Subscriber, Runnable, GameMechanics {
 
     public void handleEvent(String stuff) {
         System.out.println("GM");
-        System.out.println(stuff);
+        System.out.println("Hello, " + stuff);
         System.out.println("GM");
     }
 

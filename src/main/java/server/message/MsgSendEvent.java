@@ -14,6 +14,7 @@ public class MsgSendEvent extends MsgToGM {
 
     void exec(GameMechanics gameMechanics) {
         gameMechanics.handleEvent(this.event);
+        // TODO: send message here
 //        gameMechanicsImpl.getMessageSystem().sendMessage(new MsgUpdateUserId(getTo(), getFrom(), sessionId, id));
 //        здесь сообщение отправляется тому, от кого оно пришло
     }

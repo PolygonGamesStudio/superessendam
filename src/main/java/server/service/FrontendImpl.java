@@ -1,19 +1,21 @@
 package server.service;
 
+import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.servlet.*;
+import org.json.JSONException;
+import org.json.JSONObject;
 import server.*;
 import server.base.Frontend;
 import server.message.MessageSystem;
 import server.message.MsgGetUserId;
+import server.message.MsgSendEvent;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -23,9 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-//@ServerEndpoint(value = "/gamemechanics")
-//@WebServlet(name = "GM", value = "/gamemechanics")
-//@SuppressWarnings("serial")
 
 public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnable, Frontend {
     //public class FrontendImpl extends HttpServlet implements Subscriber, Runnable, Frontend {
@@ -140,6 +139,8 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                     return;
                 }
                 idToUserSession.put(userSession.getUserId(), userSession);
+                Cookie gamerCookie = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
+                response.addCookie(gamerCookie); // FIXME: hash userSession.getUserId() + salt
                 responseGamePage(response);
                 return;
             case AUTH:
@@ -185,12 +186,14 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
             String login = request.getParameter("login");
             String password = request.getParameter("password");
             String sessionId = request.getSession().getId();
-            UserSession userSession = new UserSession(messageSystem.getAddressService().getAddressFE(), messageSystem.getAddressService().getAddressGM(), login, sessionId);
+            UserSession userSession = new UserSession(messageSystem.getAddressService().getAddressFE(), messageSystem.getAddressService().getAddressGM(), messageSystem.getAddressService().getAddressAS(), login, sessionId);
             sessionIdToUserSession.put(sessionId, userSession);
 
             Address frontendAddress = getAddress();
-            Address accountServiceAddress = userSession.getAddressFE();
+            Address accountServiceAddress = userSession.getAddressAS();
             messageSystem.sendMessage(new MsgGetUserId(frontendAddress, accountServiceAddress, login, password, sessionId));
+
+            // FIXME: possible bug with addresses
 
             response.sendRedirect("/userid");
         }
@@ -212,13 +215,16 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         webSocketServletFactory.setCreator(new WebSocketCreator() {
             @Override
             public Object createWebSocket(ServletUpgradeRequest servletUpgradeRequest, ServletUpgradeResponse servletUpgradeResponse) {
-//                return new GameSocket();
-                return new GMSocket();
+                if (servletUpgradeRequest.getRequestPath().equals("/gamemechanics"))
+                    return new GMSocket();
+                else
+                    return null;
             }
         });
     }
 
     private class GMSocket implements WebSocketListener {
+        private Session session;
 
         @Override
         public void onWebSocketBinary(byte[] payload, int offset, int len) {
@@ -231,7 +237,8 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         }
 
         @Override
-        public void onWebSocketConnect(org.eclipse.jetty.websocket.api.Session session) {
+        public void onWebSocketConnect(Session session) {
+            this.session = session;
             System.out.println("opened");
         }
 
@@ -242,67 +249,28 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 
         @Override
         public void onWebSocketText(String message) {
-            System.out.println("received: " + message);
-        }
-    }
+//            System.out.println("received: " + message);
+            try {
+                JSONObject jsonObject = new JSONObject(message);
+                String id = jsonObject.getString("id");
+                String msg = jsonObject.getString("message");
+                System.out.println("            id: " + id);
+                System.out.println("       message: " + msg);
 
-    @ServerEndpoint("/gamemechanics")
-    private class GameSocket {
-        @OnOpen
-        public void onWebSocketConnect(Session session, EndpointConfig config) {
-            System.out.println("Socket connected: " + session);
+                UserSession userSession = idToUserSession.get(Long.parseLong(id));
+                String gamerLogin = userSession.getLogin();
+                Address frontend = messageSystem.getAddressService().getAddressFE();
+                Address gameMechanics = messageSystem.getAddressService().getAddressGM();
+                messageSystem.sendMessage(new MsgSendEvent(frontend, gameMechanics, gamerLogin + ": " + msg));
+//                System.out.println("Socket session:");
+//                System.out.println(session);
+//                System.out.println("User session");
+//                System.out.println(userSession);
 
-        }
-
-        @OnMessage
-        public void onWebSocketMessage(String message) {
-            System.out.println("Received message: " + message);
-        }
-
-        @OnClose
-        public void onWebSocketClose(CloseReason reason) {
-            System.out.println("Reason: " + reason);
-        }
-    }
-
-//    @Override
-//    public WebSocket doWebSocketConnect(HttpServletRequest httpServletRequest, String s) {
-//        return null;
-//    }
-
-//    @Override
-//    public WebSocket doWebSocketConnect(HttpServletRequest httpServletRequest, String s) {
-//        return new GMSocket(); // TODO: return socket
-//    }
-//
-//    private class GMSocket implements WebSocket.OnTextMessage {
-//        @Override
-//        public void onMessage(String s) {
-//            System.out.println("Received: " + s);
-//            JSONObject jsonObject = null;
-//            try {
-//                jsonObject = new JSONObject(s);
-//                System.out.println("            id: " + jsonObject.getString("id"));
-//                System.out.println("       message: " + jsonObject.getString("message"));
-//            } catch (JSONException e) {
+            } catch (JSONException e) {
 //                e.printStackTrace();
-//            }
-//            // TODO: send message
-//
-////        sessionIdToUserSession.get(sessionId, userSession);
-////        Address frontendAddress = getAddress();
-////        Address gameMechanicsAddress = userSession.getAddressGM();
-////        messageSystem.sendMessage(new MsgSendEvent(frontendAddress, accountServiceAddress, message));
-//        }
-//
-//        @Override
-//        public void onOpen(Connection connection) {
-//            System.out.println("Opened");
-//        }
-//
-//        @Override
-//        public void onClose(int i, String s) {
-//            System.out.println("Closed");
-//        }
-//    }
+                System.out.println("Smth got wrong with casting message to json");
+            }
+        }
+    }
 }

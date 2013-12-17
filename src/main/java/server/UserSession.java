@@ -1,27 +1,23 @@
 package server;
 
 public class UserSession {
-    private Address addressFE;
+    private Address addressFE;  // Frontend
+    private Address addressAS;  // Account Service
+    private Address addressGM;  // Game Mechanics
 
-    public Address getAddressGM() {
-        return addressGM;
-    }
-
-    private Address addressGM;
 
     private String login;
-    //    private String password;
     private String sessionId;
     private Long userId;
     private boolean isAuthResponseFromServer;
 
     //    public UserSession(Address addressFE, String login, String password, String sessionId) {
-    public UserSession(Address addressFE, Address addressGM, String login, String sessionId) {
+    public UserSession(Address addressFE, Address addressGM, Address addressAS, String login, String sessionId) {
 
         this.addressFE = addressFE;
         this.addressGM = addressGM;
+        this.addressAS = addressAS;
         this.login = login;
-//        this.password = password;
         this.sessionId = sessionId;
         this.isAuthResponseFromServer = false;
     }
@@ -30,10 +26,18 @@ public class UserSession {
         return addressFE;
     }
 
+    public Address getAddressGM() {
+        return addressGM;
+    }
+
+    public Address getAddressAS() {
+        return addressAS;
+    }
+
+
     public String getLogin() {
         return login;
     }
-
     public String getSessionId() {
         return sessionId;
     }
@@ -41,7 +45,6 @@ public class UserSession {
     public Long getUserId() {
         return userId;
     }
-
     public void setUserId(Long userId) {
         this.userId = userId;
     }
@@ -49,7 +52,6 @@ public class UserSession {
     public void setAuthResponseFromServer() {
         isAuthResponseFromServer = true;
     }
-
     public boolean gotAuthResponse() {
         return isAuthResponseFromServer;
     }
