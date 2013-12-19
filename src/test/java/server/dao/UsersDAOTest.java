@@ -1,9 +1,4 @@
 package server.dao;
-//1. Тест конекта
-//2. Тест наличия базы
-//3. Тест записи
-//4. Тест чтения
-//5. удаление!!!
 
 import org.junit.After;
 import org.junit.Test;
