@@ -10,6 +10,7 @@ import server.base.Frontend;
 import server.message.MessageSystem;
 import server.message.MsgGetUserId;
 import server.message.MsgSendEvent;
+import server.message.MsgToPutUser;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -194,6 +195,20 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
             messageSystem.sendMessage(new MsgGetUserId(frontendAddress, accountServiceAddress, login, password, sessionId));
 
             // FIXME: possible bug with addresses
+
+            response.sendRedirect("/userid");
+        }
+
+        if (request.getPathInfo().equals("/newuser")) {
+            String login = request.getParameter("login");
+            String password = request.getParameter("password");
+            String sessionId = request.getSession().getId();
+            UserSession userSession = new UserSession(messageSystem.getAddressService().getAddressFE(), messageSystem.getAddressService().getAddressGM(), messageSystem.getAddressService().getAddressAS(), login, sessionId);
+            sessionIdToUserSession.put(sessionId, userSession);
+
+            Address frontendAddress = getAddress();
+            Address accountServiceAddress = userSession.getAddressAS();
+            messageSystem.sendMessage(new MsgToPutUser(frontendAddress, accountServiceAddress, login, password, sessionId));
 
             response.sendRedirect("/userid");
         }

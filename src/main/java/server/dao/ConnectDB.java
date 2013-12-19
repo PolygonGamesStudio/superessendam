@@ -19,7 +19,7 @@ public class ConnectDB {
                     append("3306/").                //port
                     append("gameJavaDB?").            //db name
                     append("user=root&").            //login
-                    append("password=1fear1");      //password FIXME: change password
+                    append("password=root");      //password FIXME: change password
 
             System.out.append("URL: " + url + "\n");
 
@@ -30,19 +30,4 @@ public class ConnectDB {
         }
         return null;
     }
-
-//    public static void connect(){
-//        Connection connection = getConnection();
-//        System.out.append("Connected!\n");
-//        try {
-//            System.out.println("Autocommit: " + connection.getAutoCommit());
-//            System.out.println("DB name: " + connection.getMetaData().getDatabaseProductName());
-//            System.out.println("DB version: " + connection.getMetaData().getDatabaseProductVersion());
-//            System.out.println("Driver: " + connection.getMetaData().getDriverName());
-//            connection.close();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//    }
 }
