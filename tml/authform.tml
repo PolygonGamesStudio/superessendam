@@ -10,6 +10,7 @@
 <div id="logo">
 </div>
 <div id="page">
+    <h3>Log in</h3>
     <form id="loginform" class="form-vertical" action="/auth" method="POST" onsubmit="">
         <p>Enter username and password to continue.</p>
 
@@ -37,7 +38,7 @@
                                             value="Login"/></span>
         </div>
     </form>
-
+    <h3>Registration</h3>
     <form id="registration-form" class="form-vertical" action="/newuser" method="POST" onsubmit="">
         <p>Enter username and password to continue.</p>
 
