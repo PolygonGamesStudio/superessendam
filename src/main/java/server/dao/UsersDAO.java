@@ -29,4 +29,10 @@ public class UsersDAO {
         TExecutor exec = new TExecutor();
         exec.execUpdateQuery(con, "INSERT INTO users (name, password) VALUES ('" + user +"','"+ pass+"');");
     }
+
+    //DELETE FROM <Имя Таблицы> WHERE <Условие отбора записей>
+    public void delete(String user) throws SQLException{
+        TExecutor exec = new TExecutor();
+        exec.execUpdateQuery(con, "DELETE FROM users where name = '" + user +"';");
+    }
 }
