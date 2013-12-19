@@ -12,7 +12,7 @@ import java.sql.SQLException;
 public class UsersDAOTest {
 
     @Before
-    public void add_users(){
+    public void add_user(){
         Connection connection = ConnectDB.getConnection();
         UsersDAO userDAO = new UsersDAO(connection);
         try {
@@ -23,7 +23,7 @@ public class UsersDAOTest {
     }
 
     @Test
-    public void testSelect() {
+    public void select_user() {
         Connection connection = ConnectDB.getConnection();
         UsersDAO userDAO = new UsersDAO(connection);
         try {
