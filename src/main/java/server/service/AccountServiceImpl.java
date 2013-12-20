@@ -37,7 +37,7 @@ public class AccountServiceImpl implements Subscriber, Runnable, AccountService 
 
     public Long getUserId(String login, String password) {
         TimeHelper.sleep(500);
-        Connection connection = ConnectDB.getConnection();
+        Connection connection = ConnectDB.getConnection("gameJavaDB");
         UsersDAO userDAO = new UsersDAO(connection);
         try {
             UsersDataSet result = userDAO.get(login, password);
@@ -50,7 +50,7 @@ public class AccountServiceImpl implements Subscriber, Runnable, AccountService 
 
     public void setUserId(String login, String password) {
         TimeHelper.sleep(500);
-        Connection connection = ConnectDB.getConnection();
+        Connection connection = ConnectDB.getConnection("gameJavaDB");
         UsersDAO userDAO = new UsersDAO(connection);
         try {
             userDAO.set(login, password);

@@ -35,4 +35,16 @@ public class UsersDAO {
         TExecutor exec = new TExecutor();
         exec.execUpdateQuery(con, "DELETE FROM users where name = '" + user +"';");
     }
+
+    //CREATE DATABASE dbname;
+    public void createDB(String name) throws SQLException{
+        TExecutor exec = new TExecutor();
+        exec.execUpdateQuery(con, "CREATE DATABASE '" + name +"';");
+    }
+
+    //CREATE DATABASE dbname;
+    public void dropDB(String name) throws SQLException{
+        TExecutor exec = new TExecutor();
+        exec.execUpdateQuery(con, "DROP DATABASE '" + name +"';");
+    }
 }

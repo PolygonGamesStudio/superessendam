@@ -13,8 +13,8 @@ public class UsersDAOTest {
 
     @Before
     public void add_user(){
-        Connection connection = ConnectDB.getConnection();
-//        String url = connection.getURL();
+        Connection connection = ConnectDB.getConnection("test_data"); // TODO: create DB
+//        String url = connection.get
 //        assertEquals(url, "jdbc:mysql://localhost:3306/gameJavaDB?user=root&password=root");
         UsersDAO userDAO = new UsersDAO(connection);
         try {
@@ -26,11 +26,11 @@ public class UsersDAOTest {
 
     @Test
     public void select_user() {
-        Connection connection = ConnectDB.getConnection();
+        Connection connection = ConnectDB.getConnection("test_data");
         UsersDAO userDAO = new UsersDAO(connection);
         try {
             UsersDataSet result = userDAO.get("test_user1", "test_password1");
-            assertEquals(result.getName(), "test_user1");
+            assertEquals(result.getName(), "test_user0");
             assertEquals(result.getPassword(), "test_password1");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -39,7 +39,7 @@ public class UsersDAOTest {
 
     @After
     public void del_user() {
-        Connection connection = ConnectDB.getConnection();
+        Connection connection = ConnectDB.getConnection("test_data");  // TODO: drop DB
         UsersDAO userDAO = new UsersDAO(connection);
         try {
             userDAO.delete("test_user1");

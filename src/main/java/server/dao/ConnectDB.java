@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class ConnectDB {
 
-    public static Connection getConnection() {
+    public static Connection getConnection(String name) {
         try {
             DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
 
@@ -17,7 +17,7 @@ public class ConnectDB {
                     append("jdbc:mysql://").
                     append("localhost:").
                     append("3306/").
-                    append("gameJavaDB?").
+                    append(name+"?").
                     append("user=root&").
                     append("password=root");   // FIXME: need system resources
 
