@@ -243,7 +243,8 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                 // TODO: check for correct url
                 String path = servletUpgradeRequest.getRequestPath();
                 String room = path.substring("/gamemechanics".length() + 1);
-                GMSocket socket = new GMSocket();
+//                servletUpgradeResponse.addHeader("roomName",room);
+                GMSocket socket = new GMSocket(room);
                 if (nameToRoom.get(room) == null) {
                     Set roomSet = new HashSet();
                     roomSet.add(socket);
@@ -257,7 +258,29 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     }
 
     private class GMSocket implements WebSocketListener {
+        //        private Map<String, Set<GMSocket>> roomToRoom = new ConcurrentHashMap<String, Set<GMSocket>>();
         private Session session;
+        private String roomName;
+
+        public GMSocket(String room) {
+            roomName = room;
+        }
+
+        private void sendMessage(String message) {
+            try {
+                session.getRemote().sendString(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void broadcast(String message) {
+            for (GMSocket socket : nameToRoom.get(roomName)) {
+                if (this == socket)
+                    continue;
+                socket.sendMessage(message);
+            }
+        }
 
         @Override
         public void onWebSocketBinary(byte[] payload, int offset, int len) {
@@ -272,6 +295,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         @Override
         public void onWebSocketConnect(Session session) {
             this.session = session;
+//            this.roomName = session.getUpgradeRequest().getQueryString();
             System.out.println("opened");
         }
 
