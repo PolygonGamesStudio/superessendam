@@ -7,10 +7,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import server.*;
 import server.base.Frontend;
-import server.message.MessageSystem;
+import server.message.*;
 import server.message.MsgGetUserId;
-import server.message.MsgSendEvent;
 import server.message.MsgToPutUser;
+import server.message.MsgSendEvent;
+import server.message.MsgUserAdded;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -32,7 +33,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     private Map<String, UserSession> sessionIdToUserSession = new ConcurrentHashMap<>();
     private Map<Long, UserSession> idToUserSession = new ConcurrentHashMap<>();
     private Map<String, Set<GMSocket>> nameToRoom = new ConcurrentHashMap<String, Set<GMSocket>>(); // TODO: commemnts
-    private Map<GMSocket, Long> socketToUserId = new ConcurrentHashMap<>();
+    private Map<Long, GMSocket> userIdToSocket = new ConcurrentHashMap<>();
 
     public FrontendImpl(MessageSystem messageSystem) {
         this.address = new Address();
@@ -53,6 +54,11 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         }
         userSession.setUserId(userId);
         userSession.setAuthResponseFromServer();
+    }
+
+    @Override
+    public void closeSocket(Long idForSocket) {
+        userIdToSocket.get(idForSocket).onWebSocketClose(418, "error");
     }
 
     private static String getTime() {
@@ -122,15 +128,15 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         UserSession userSession = sessionIdToUserSession.get(session.getId());
 
         switch (request.getPathInfo()) {
-            case USERID:
-                if (userSession == null || userSession.getUserId() == null) {
-                    response.sendRedirect("/auth");
-                    return;
-                }
-                Cookie userCookie = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
-                response.addCookie(userCookie); // FIXME: hash userSession.getUserId() + salt
-                responseUserPage(response, "name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
-                return;
+//            case USERID:
+//                if (userSession == null || userSession.getUserId() == null) {
+//                    response.sendRedirect("/auth");
+//                    return;
+//                }
+//                Cookie userCookie = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
+//                response.addCookie(userCookie); // FIXME: hash userSession.getUserId() + salt
+//                responseUserPage(response, "name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
+//                return;
             case CHAT:
                 responseChatPage(response);
                 return;
@@ -182,7 +188,6 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                     Cookie gamerCookieRoom = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
                     response.addCookie(gamerCookieRoom); // FIXME: hash userSession.getUserId() + salt
                     responseGamePage(response);
-                    return;
                 } else
                     response404Page(response);
         }
@@ -247,6 +252,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 //                servletUpgradeResponse.addHeader("roomName",room);
                 Long userId = Long.valueOf(servletUpgradeRequest.getCookies().get(1).getValue());
                 GMSocket socket = new GMSocket(room, userId);
+                // msg to GM -> room / count player
                 if (nameToRoom.get(room) == null) {
                     Set roomSet = new HashSet();
                     roomSet.add(socket);
@@ -300,8 +306,8 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         @Override
         public void onWebSocketConnect(Session session) {
             this.session = session;
-            socketToUserId.put(this, userId);
-//            messageSystem.sendMessage(new MsgT);         // TODO: here
+            userIdToSocket.put(userId, this);
+            messageSystem.sendMessage(new MsgUserAdded(messageSystem.getAddressService().getAddressFE(), messageSystem.getAddressService().getAddressGM(), roomName, userId));
             System.out.println("opened");
         }
 
@@ -315,7 +321,6 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 
         @Override
         public void onWebSocketText(String message) {
-//            System.out.println("received: " + message);
             try {
                 JSONObject jsonObject = new JSONObject(message);
                 String id = jsonObject.getString("id");

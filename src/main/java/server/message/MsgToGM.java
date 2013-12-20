@@ -3,6 +3,7 @@ package server.message;
 import server.Address;
 import server.Subscriber;
 import server.base.GameMechanics;
+import server.message.Msg;
 
 public abstract class MsgToGM extends Msg {
     public MsgToGM(Address from, Address to) {
@@ -15,7 +16,7 @@ public abstract class MsgToGM extends Msg {
         }
     }
 
-    abstract void exec(GameMechanics frontend);
+    abstract void exec(GameMechanics gameMechanics);
 
 
 }

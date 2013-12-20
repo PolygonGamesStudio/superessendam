@@ -8,4 +8,6 @@ public interface GameMechanics {
     public void handleEvent(String stuff);
 
     public MessageSystem getMessageSystem();
+
+    void userAdd(String room, Long userId);
 }

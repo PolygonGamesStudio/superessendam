@@ -19,7 +19,7 @@ public class ConnectDB {
                     append("3306/").
                     append(name+"?").
                     append("user=root&").
-                    append("password=1fear1");   // FIXME: need system resources
+                    append("password=root");   // FIXME: need system resources
 
             Connection connection = DriverManager.getConnection(url.toString());
             return connection;
