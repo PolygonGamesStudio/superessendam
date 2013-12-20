@@ -21,9 +21,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -33,6 +31,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     private final Address address;
     private Map<String, UserSession> sessionIdToUserSession = new ConcurrentHashMap<>();
     private Map<Long, UserSession> idToUserSession = new ConcurrentHashMap<>();
+    private Map<String, Set<GMSocket>> nameToRoom = new ConcurrentHashMap<String, Set<GMSocket>>(); // TODO: commemnts
 
     public FrontendImpl(MessageSystem messageSystem) {
         this.address = new Address();
@@ -173,7 +172,18 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                 responseSlavePage(response);
                 return;
             default:
-                response404Page(response);
+                if (request.getPathInfo().matches(GAME + "/[A-Za-z0-9]{1,512}")) {
+                    if (userSession == null || userSession.getUserId() == null) {
+                        response.sendRedirect("/auth");
+                        return;
+                    }
+                    idToUserSession.put(userSession.getUserId(), userSession);
+                    Cookie gamerCookieRoom = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
+                    response.addCookie(gamerCookieRoom); // FIXME: hash userSession.getUserId() + salt
+                    responseGamePage(response);
+                    return;
+                } else
+                    response404Page(response);
         }
     }
 
@@ -230,16 +240,47 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         webSocketServletFactory.setCreator(new WebSocketCreator() {
             @Override
             public Object createWebSocket(ServletUpgradeRequest servletUpgradeRequest, ServletUpgradeResponse servletUpgradeResponse) {
-                if (servletUpgradeRequest.getRequestPath().equals("/gamemechanics"))
-                    return new GMSocket();
-                else
-                    return null;
+                // TODO: check for correct url
+                String path = servletUpgradeRequest.getRequestPath();
+                String room = path.substring("/gamemechanics".length() + 1);
+//                servletUpgradeResponse.addHeader("roomName",room);
+                GMSocket socket = new GMSocket(room);
+                if (nameToRoom.get(room) == null) {
+                    Set roomSet = new HashSet();
+                    roomSet.add(socket);
+                    nameToRoom.put(room, roomSet);
+                } else {
+                    nameToRoom.get(room).add(socket);
+                }
+                return socket;
             }
         });
     }
 
     private class GMSocket implements WebSocketListener {
+        //        private Map<String, Set<GMSocket>> roomToRoom = new ConcurrentHashMap<String, Set<GMSocket>>();
         private Session session;
+        private String roomName;
+
+        public GMSocket(String room) {
+            roomName = room;
+        }
+
+        private void sendMessage(String message) {
+            try {
+                session.getRemote().sendString(message);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void broadcast(String message) {
+            for (GMSocket socket : nameToRoom.get(roomName)) {
+                if (this == socket)
+                    continue;
+                socket.sendMessage(message);
+            }
+        }
 
         @Override
         public void onWebSocketBinary(byte[] payload, int offset, int len) {
@@ -248,7 +289,9 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 
         @Override
         public void onWebSocketClose(int statusCode, String reason) {
-
+            if (nameToRoom.get(roomName) != null) {
+                nameToRoom.get(roomName).remove(this);
+            }
         }
 
         @Override
@@ -260,6 +303,9 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         @Override
         public void onWebSocketError(Throwable cause) {
             System.out.println("Cause: " + cause);
+            if (nameToRoom.get(roomName) != null) {
+                nameToRoom.get(roomName).remove(this);
+            }
         }
 
         @Override
@@ -286,6 +332,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 //                e.printStackTrace();
                 System.out.println("Smth got wrong with casting message to json");
             }
+            broadcast("Hello");
         }
     }
 }
