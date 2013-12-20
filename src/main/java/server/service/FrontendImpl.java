@@ -8,10 +8,6 @@ import org.json.JSONObject;
 import server.*;
 import server.base.Frontend;
 import server.message.*;
-import server.message.MsgGetUserId;
-import server.message.MsgToPutUser;
-import server.message.MsgSendEvent;
-import server.message.MsgUserAdded;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -142,7 +138,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                 return;
             case GAME:
                 if (userSession == null || userSession.getUserId() == null) {
-                    response.sendRedirect("/auth");
+                    response.sendRedirect(AUTH);
                     return;
                 }
                 idToUserSession.put(userSession.getUserId(), userSession);
@@ -163,7 +159,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                     responseAuthPage(response, "Waiting for authorization");
                     return;
                 }
-                response.sendRedirect("/userid");
+                response.sendRedirect(GAME + "/1"); // FIXME: here
                 return;
             case LOGOUT:
                 String sessionId = request.getSession().getId();
@@ -181,7 +177,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
             default:
                 if (request.getPathInfo().matches(GAME + "/[A-Za-z0-9]{1,512}")) {
                     if (userSession == null || userSession.getUserId() == null) {
-                        response.sendRedirect("/auth");
+                        response.sendRedirect(AUTH);
                         return;
                     }
                     idToUserSession.put(userSession.getUserId(), userSession);
@@ -212,7 +208,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 
             // FIXME: possible bug with addresses
 
-            response.sendRedirect("/userid");
+            response.sendRedirect(GAME + "/1"); // FIXME: here
         }
 
         if (request.getPathInfo().equals("/newuser")) {
