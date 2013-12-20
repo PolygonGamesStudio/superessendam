@@ -32,6 +32,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     private Map<String, UserSession> sessionIdToUserSession = new ConcurrentHashMap<>();
     private Map<Long, UserSession> idToUserSession = new ConcurrentHashMap<>();
     private Map<String, Set<GMSocket>> nameToRoom = new ConcurrentHashMap<String, Set<GMSocket>>(); // TODO: commemnts
+    private Map<GMSocket, Long> socketToUserId = new ConcurrentHashMap<>();
 
     public FrontendImpl(MessageSystem messageSystem) {
         this.address = new Address();
@@ -244,7 +245,8 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                 String path = servletUpgradeRequest.getRequestPath();
                 String room = path.substring("/gamemechanics".length() + 1);
 //                servletUpgradeResponse.addHeader("roomName",room);
-                GMSocket socket = new GMSocket(room);
+                Long userId = Long.valueOf(servletUpgradeRequest.getCookies().get(1).getValue());
+                GMSocket socket = new GMSocket(room, userId);
                 if (nameToRoom.get(room) == null) {
                     Set roomSet = new HashSet();
                     roomSet.add(socket);
@@ -258,12 +260,13 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     }
 
     private class GMSocket implements WebSocketListener {
-        //        private Map<String, Set<GMSocket>> roomToRoom = new ConcurrentHashMap<String, Set<GMSocket>>();
         private Session session;
         private String roomName;
+        private Long userId;
 
-        public GMSocket(String room) {
-            roomName = room;
+        public GMSocket(String roomName, Long userId) {
+            this.roomName = roomName;
+            this.userId = userId;
         }
 
         private void sendMessage(String message) {
@@ -297,6 +300,8 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         @Override
         public void onWebSocketConnect(Session session) {
             this.session = session;
+            socketToUserId.put(this, userId);
+//            messageSystem.sendMessage(new MsgT);         // TODO: here
             System.out.println("opened");
         }
 
