@@ -48,6 +48,17 @@ public class AccountServiceImpl implements Subscriber, Runnable, AccountService 
         return null;
     }
 
+    public void setUserId(String login, String password) {
+        TimeHelper.sleep(500);
+        Connection connection = ConnectDB.getConnection();
+        UsersDAO userDAO = new UsersDAO(connection);
+        try {
+            userDAO.set(login, password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Address getAddress() {
         return address;
     }
