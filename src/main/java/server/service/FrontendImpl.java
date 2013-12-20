@@ -289,19 +289,23 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 
         @Override
         public void onWebSocketClose(int statusCode, String reason) {
-
+            if (nameToRoom.get(roomName) != null) {
+                nameToRoom.get(roomName).remove(this);
+            }
         }
 
         @Override
         public void onWebSocketConnect(Session session) {
             this.session = session;
-//            this.roomName = session.getUpgradeRequest().getQueryString();
             System.out.println("opened");
         }
 
         @Override
         public void onWebSocketError(Throwable cause) {
             System.out.println("Cause: " + cause);
+            if (nameToRoom.get(roomName) != null) {
+                nameToRoom.get(roomName).remove(this);
+            }
         }
 
         @Override
@@ -328,6 +332,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 //                e.printStackTrace();
                 System.out.println("Smth got wrong with casting message to json");
             }
+            broadcast("Hello");
         }
     }
 }
