@@ -2,22 +2,23 @@ package server.message;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.runners.MockitoJUnitRunner;
 import server.Address;
-import server.TimeHelper;
 import server.service.AccountServiceImpl;
 import server.service.FrontendImpl;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class MessageSystemTest {
 
-    private AccountServiceImpl accountServiceImpl;
-    private AccountServiceImpl spyAccountServiceImpl;
-    private FrontendImpl frontendImpl;
-    private FrontendImpl spyFrontendImpl;
+    private AccountServiceImpl accountService;
+    private AccountServiceImpl spyAccountService;
+    private FrontendImpl frontend;
+    private FrontendImpl spyFrontend;
     private MessageSystem messageSystem;
 
     private Long id;
@@ -27,43 +28,48 @@ public class MessageSystemTest {
     public void setUp() {
         messageSystem = new MessageSystem();
 
-//        frontend = new Frontend(messageSystem);
-//        spyFrontend = spy(frontend);
+        frontend = new FrontendImpl(messageSystem);
+        spyFrontend = spy(frontend);
 
-        accountServiceImpl = new AccountServiceImpl(messageSystem);
-        spyAccountServiceImpl = spy(accountServiceImpl);
+        accountService = new AccountServiceImpl(messageSystem);
+        spyAccountService = spy(accountService);
         id = (long) 2;
 
         sessionId = "df45e";
 
 //        (new Thread(spyFrontend)).start();
-        (new Thread(spyAccountServiceImpl)).start();
+//        (new Thread(spyAccountService)).start();
     }
 
     @Test
     public void testingMessageSystem() {
-        Address fAddress = new Address();
-        Address aAddress = new Address();
+//        Address fAddress = new Address();
+//        Address aAddress = new Address();
 //        when(spyFrontend.getAddress()).thenReturn(fAddress);
-        when(spyAccountServiceImpl.getAddress()).thenReturn(aAddress);
+//        when(spyAccountService.getAddress()).thenReturn(aAddress);
 
-//        Address frontendAddress = spyFrontend.getAddress();
-        Address accountServiceAddress = spyAccountServiceImpl.getAddress();
+        Address frontendAddress = spyFrontend.getAddress();
+        Address accountServiceAddress = spyAccountService.getAddress();
 
-        String login = "python";
-        String password = "java";
+        String login = "hui";
+        String password = "lol";
         // why not)
 
 
-        when(spyAccountServiceImpl.getUserId("python", "java")).thenReturn(id);
+//        when(spyAccountService.getUserId(login, password)).thenReturn(id);
+        doReturn(id).when(spyAccountService).getUserId(login, password);
 
-//        messageSystem.sendMessage(new MsgGetUserId(frontendAddress, accountServiceAddress, login, password, sessionId));
-        TimeHelper.sleep(6000);
+        messageSystem.sendMessage(new MsgGetUserId(frontendAddress, accountServiceAddress, login, password, sessionId));
+        messageSystem.execForSubscriber(spyAccountService);
+
 
         ArgumentCaptor<String> captorForSessionId = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<Long> captorForId = ArgumentCaptor.forClass(Long.class);
 
-//        verify(spyFrontend).setId(captorForSessionId.capture(), captorForId.capture());
+        messageSystem.execForSubscriber(spyFrontend);
+        verify(spyFrontend).setId(captorForSessionId.capture(), captorForId.capture());
+
+
         assertEquals(captorForSessionId.getValue(), sessionId);
         assertEquals(captorForId.getValue(), id);
 
