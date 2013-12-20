@@ -14,14 +14,12 @@ public class ConnectDB {
             StringBuilder url = new StringBuilder();
 
             url.
-                    append("jdbc:mysql://").        //db type
-                    append("localhost:").            //host name
-                    append("3306/").                //port
-                    append("gameJavaDB?").            //db name
-                    append("user=root&").            //login
-                    append("password=root");      //password FIXME: change password
-
-            System.out.append("URL: " + url + "\n");
+                    append("jdbc:mysql://").
+                    append("localhost:").
+                    append("3306/").
+                    append("gameJavaDB?").
+                    append("user=root&").
+                    append("password=root");   // FIXME: need system resources
 
             Connection connection = DriverManager.getConnection(url.toString());
             return connection;
