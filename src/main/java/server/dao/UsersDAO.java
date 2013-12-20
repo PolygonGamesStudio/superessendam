@@ -36,15 +36,18 @@ public class UsersDAO {
         exec.execUpdateQuery(con, "DELETE FROM users where name = '" + user +"';");
     }
 
-    //CREATE DATABASE dbname;
-    public void createDB(String name) throws SQLException{
+    //CREATE TABLE example ( id INT, data VARCHAR(100) );
+    //    idusers	int(11) PK AI AUTO_INCREMENT PRIMARY KEY
+    //    name	varchar(45) UNIQUE
+    //    password	varchar(45)
+    public void createTable(String name) throws SQLException{
         TExecutor exec = new TExecutor();
-        exec.execUpdateQuery(con, "CREATE DATABASE '" + name +"';");
+        exec.execUpdateQuery(con, "CREATE TABLE " + name + " (idusers int(11) AUTO_INCREMENT PRIMARY KEY, name varchar(45) UNIQUE, password varchar(45));");
     }
 
-    //CREATE DATABASE dbname;
-    public void dropDB(String name) throws SQLException{
+    //CREATE TABLE dbname;
+    public void dropTable(String name) throws SQLException{
         TExecutor exec = new TExecutor();
-        exec.execUpdateQuery(con, "DROP DATABASE '" + name +"';");
+        exec.execUpdateQuery(con, "DROP TABLE "+ name +";");
     }
 }
