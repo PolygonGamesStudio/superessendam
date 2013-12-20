@@ -13,7 +13,7 @@
     var KEYCODE_RIGHT = 39;     //usefull keycode
     var KEYCODE_DOWN = 40;     //usefull keycode
 
-    var ws = new WebSocket("ws://localhost:8080/gamemechanics");
+    var ws = new WebSocket("ws://localhost:8080/gamemechanics"+"/"+window.location.href.split("/")[4]);
 
     ws.onopen = function() { };
 
