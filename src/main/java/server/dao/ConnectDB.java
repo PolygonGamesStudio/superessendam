@@ -1,5 +1,8 @@
 package server.dao;
 
+import resource.DbInfo;
+import server.base.Resource;
+
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -7,42 +10,33 @@ import java.sql.SQLException;
 
 public class ConnectDB {
 
-    public static Connection getConnection() {
-        try{
-            DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
+    public static Connection getConnection(Resource connectionInfo) {
+        try {
+            DbInfo connInfo = null;
+            if(connectionInfo instanceof DbInfo)
+            {
+                connInfo = (DbInfo)connectionInfo;
+            }
+            DriverManager.registerDriver((Driver) Class.forName("com." +
+                                                                connInfo.type +
+                                                                ".jdbc.Driver").newInstance());
 
             StringBuilder url = new StringBuilder();
 
             url.
-                    append("jdbc:mysql://").		//db type
-                    append("localhost:"). 			//host name
-                    append("3306/").				//port
-                    append("gameJavaDB?").			//db name
-                    append("user=root&").			//login
-                    append("password=1fear1");        //password
+                    append("jdbc:"+ connInfo.type + "://").
+                    append(connInfo.address + ":").
+                    append(connInfo.port +"/").
+                    append(connInfo.dataBaseName +"?").
+                    append("user=" + connInfo.user + "&").
+                    append("password=" + connInfo.password);   // FIXME: need system resources
 
-            System.out.append("URL: " + url + "\n");
-
+            System.out.println(url.toString());
             Connection connection = DriverManager.getConnection(url.toString());
             return connection;
         } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static void connect(){
-        Connection connection = getConnection();
-        System.out.append("Connected!\n");
-        try {
-            System.out.println("Autocommit: " + connection.getAutoCommit());
-            System.out.println("DB name: " + connection.getMetaData().getDatabaseProductName());
-            System.out.println("DB version: " + connection.getMetaData().getDatabaseProductVersion());
-            System.out.println("Driver: " + connection.getMetaData().getDriverName());
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
     }
 }

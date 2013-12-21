@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Игра</title>
+</head>
+<body>
+<div id="state">${userState}</div>
+<!--TODO: add element: {"method":"id","selector":"state"} for name and id-->
+<div id="message"></div>
+Тут будет игра
+</body>
+<script src="/js/cookie.js"></script>
+<script>
+    var KEYCODE_UP = 38;        //usefull keycode
+    var KEYCODE_LEFT = 37;      //usefull keycode
+    var KEYCODE_RIGHT = 39;     //usefull keycode
+    var KEYCODE_DOWN = 40;     //usefull keycode
+
+    var ws = new WebSocket("ws://localhost:8080/game"+"/"+window.location.href.split("/")[4]);
+
+    ws.onopen = function() { };
+
+    ws.onclose = function() { alert("Connection closed...") };
+
+    ws.onmessage = function(evt) {
+        alert(evt.data);
+        if (evt.data == 'wait') {
+            document.getElementById("message").innerHTML = "waiting for other players...";
+        };
+    };
+    function handleKeyDown(e) {
+        // TODO: it work's only in firefox; Chrome is not done
+        //cross browser issues exist
+        ws.send('hello from browser');
+//        ws.send('hello');
+        //if(!e) { var e = window.event; }
+        //switch(e.keyCode) {
+          //  case KEYCODE_UP: mes = 'up'; ws.send(JSON.stringify({"id": cookie.GetCookie('user_id'),"message" : mes})); return false;
+            //case KEYCODE_LEFT: mes = 'left'; ws.send(JSON.stringify({id: cookie.GetCookie('user_id'),message : mes})); return false;
+//            case KEYCODE_RIGHT: mes = 'right'; ws.send(JSON.stringify({id: cookie.GetCookie('user_id'),message : mes})); return false;
+  //          case KEYCODE_DOWN: mes = 'down'; ws.send(JSON.stringify({id: cookie.GetCookie('user_id'),message : mes})); return false;
+    //    };
+    }
+    window.addEventListener('keypress', handleKeyDown);
+
+
+</script>
+</html>

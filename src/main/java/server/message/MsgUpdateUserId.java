@@ -1,7 +1,7 @@
 package server.message;
 
 import server.Address;
-import server.service.Frontend;
+import server.base.Frontend;
 
 public class MsgUpdateUserId extends MsgToFrontend {
 

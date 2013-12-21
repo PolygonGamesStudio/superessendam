@@ -1,8 +1,9 @@
 package server.message;
 
 import server.Address;
-import server.AddressService;
 import server.Subscriber;
+import server.base.AddressService;
+import server.service.AddressServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class MessageSystem {
     private Map<Address, ConcurrentLinkedQueue<Msg>> messages = new HashMap<>();
-    private AddressService addressService = new AddressService();
+    private AddressService addressService = new AddressServiceImpl();
 
     public void addService(Subscriber subscriber) {
         messages.put(subscriber.getAddress(), new ConcurrentLinkedQueue<Msg>());
