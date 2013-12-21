@@ -14,17 +14,20 @@ import java.sql.SQLException;
 
 public class UsersDAOTest {
 
-    private ResourceSystem resourceSystem;
-    private Connection connection;
+    private ResourceSystem resourceSystem = new ResourceSystemImpl();
+    private Connection connection = ConnectDB.getConnection(resourceSystem.getResource("testDB.xml"));
 
 
     @Before
-    public void add_user() throws SQLException{
-        resourceSystem = new ResourceSystemImpl();
-        connection = ConnectDB.getConnection(resourceSystem.getResource("testDB.xml"));
+    public void add_user() {
         UsersDAO userDAO = new UsersDAO(connection);
-        userDAO.createTable("users");
-        userDAO.set("test_user1", "test_password1");
+        try {
+            userDAO.createTable("users");
+            userDAO.set("test_user1", "test_password1");
+        } catch (SQLException e) {
+            assertEquals("asdfasdf", true, false);
+        }
+
 
     }
 
@@ -37,10 +40,16 @@ public class UsersDAOTest {
     }
 
     @After
-    public void del_user() throws SQLException{
+    public void del_user() {
         UsersDAO userDAO = new UsersDAO(connection);
-        userDAO.delete("test_user1");
-        userDAO.dropTable("users");
+        try {
+            userDAO.delete("test_user1");
+            userDAO.dropTable("users");
+        } catch (SQLException e) {
+            assertEquals(true, false);
+        }
+
+
 
     }
 }

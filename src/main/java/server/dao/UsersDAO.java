@@ -22,7 +22,6 @@ public class UsersDAO {
 
         });
     }
-
     public void set(String user, String pass) throws SQLException{
         TExecutor exec = new TExecutor();
         exec.execUpdateQuery(con, "INSERT INTO users (name, password) VALUES ('" + user +"','"+ pass+"');");
@@ -37,6 +36,7 @@ public class UsersDAO {
         TExecutor exec = new TExecutor();
         exec.execUpdateQuery(con, "CREATE TABLE " + name + " (idusers int(11) AUTO_INCREMENT PRIMARY KEY, name varchar(45) UNIQUE, password varchar(45));");
     }
+
 
     public void dropTable(String name) throws SQLException{
         TExecutor exec = new TExecutor();
