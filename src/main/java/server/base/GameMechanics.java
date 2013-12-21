@@ -1,6 +1,7 @@
 package server.base;
 
 
+import org.json.JSONObject;
 import server.message.MessageSystem;
 
 public interface GameMechanics {
@@ -10,4 +11,7 @@ public interface GameMechanics {
     public MessageSystem getMessageSystem();
 
     boolean userAdd(String room, Long userId);
+
+    public JSONObject getRooms();
+    
 }

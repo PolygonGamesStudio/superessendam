@@ -31,6 +31,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     private Map<Long, UserSession> idToUserSession = new ConcurrentHashMap<>();
     private Map<String, Set<GMSocket>> nameToRoom = new ConcurrentHashMap<String, Set<GMSocket>>(); // TODO: commemnts
     private Map<Long, GMSocket> userIdToSocket = new ConcurrentHashMap<>();
+    private Map<String, Long> roomsCountUsers = new HashMap<>();
 
     public FrontendImpl(MessageSystem messageSystem) {
         this.address = new Address();
@@ -42,6 +43,12 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 
     public Address getAddress() {
         return address;
+    }
+
+    public void putDataForGameHall(Map gamesMap) {
+        for (Object key: gamesMap.keySet()) {
+            roomsCountUsers.put(key.toString(), (Long) gamesMap.get(key));
+        }
     }
 
     public void setId(String sessionId, Long userId) {
@@ -86,6 +93,11 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         pageVariables.put("userState", userState);
         response.getWriter().println(PageGenerator.getPage("game.tml", pageVariables));
     }
+    private void responseGameHallPage(HttpServletResponse response) throws IOException {
+        Map<String, Object> pageVariables = new HashMap<>();
+        pageVariables.put("roomsCountUsers", roomsCountUsers);
+        response.getWriter().println(PageGenerator.getPage("game_hall.tml", pageVariables));
+    }
 
     private void response404Page(HttpServletResponse response) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
@@ -109,6 +121,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     private static final String GAME = "/game";
     private static final String AUTH = "/auth";
     private static final String LOGOUT = "/logout";
+    private static final String GAMEHALL = "/game-hall";
     private static final String MOBILE_MASTER = "/master";
     private static final String MOBILE_SLAVE = "/slave";
 
@@ -157,13 +170,26 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                     sessionIdToUserSession.remove(sessionId);
                 response.sendRedirect("/");
                 return;
+            case GAMEHALL:
+                if (userSession == null || userSession.getUserId() == null) {
+                    response.sendRedirect(GAMEHALL);
+                    messageSystem.sendMessage(new MsgGetRooms(getAddress(), messageSystem.getAddressService().getAddressGM())); // FIXME: переместить в место после установление сокета
+                    return;
+                }
+                Address frontendAddress = getAddress();
+                Address accountGM = userSession.getAddressGM();
+//                response.
+                responseGameHallPage(response);
+                return;
+
             // for mobile --> Frontend course
-            case MOBILE_MASTER:
-                responseMasterPage(response);
-                return;
-            case MOBILE_SLAVE:
-                responseSlavePage(response);
-                return;
+//            case MOBILE_MASTER:
+//                responseMasterPage(response);
+//                return;
+//            case MOBILE_SLAVE:
+//                responseSlavePage(response);
+//                return;
+
             default:
                 if (request.getPathInfo().matches(GAME + "/[A-Za-z0-9]{1,512}")) {
                     if (userSession == null || userSession.getUserId() == null) {
@@ -333,13 +359,8 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                 Address frontend = messageSystem.getAddressService().getAddressFE();
                 Address gameMechanics = messageSystem.getAddressService().getAddressGM();
                 messageSystem.sendMessage(new MsgSendEvent(frontend, gameMechanics, gamerLogin + ": " + msg));
-//                System.out.println("Socket session:");
-//                System.out.println(session);
-//                System.out.println("User session");
-//                System.out.println(userSession);
 
             } catch (JSONException e) {
-//                e.printStackTrace();
                 System.out.println("Smth got wrong with casting message to json");
             }
             broadcast("Hello");
