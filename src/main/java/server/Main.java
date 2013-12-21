@@ -21,7 +21,7 @@ public class Main {
 
         FrontendImpl frontend = new FrontendImpl(messageSystem);
         ResourceSystem resourceSystem = new ResourceSystemImpl();
-        AccountServiceImpl accountService = new AccountServiceImpl(messageSystem, resourceSystem);
+        AccountServiceImpl accountService = new AccountServiceImpl(messageSystem, resourceSystem, "dbaccess.xml");
         GameMechanicsImpl gameMechanics = new GameMechanicsImpl(messageSystem);
 
 

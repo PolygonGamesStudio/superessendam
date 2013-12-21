@@ -8,7 +8,7 @@ package server.base;
  * To change this template use File | Settings | File Templates.
  */
 public interface ResourceSystem {
-    public Resource getResource(Class<?> className);
+    public Resource getResource(String fileName);
 //    public void globalInit();
 
 }
