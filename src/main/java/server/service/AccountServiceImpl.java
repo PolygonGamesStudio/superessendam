@@ -24,10 +24,10 @@ public class AccountServiceImpl implements Subscriber, Runnable, AccountService 
 //    private MessageSystem messageSystem;
     private DbInfo connectionInfo;
 
-    public AccountServiceImpl(MessageSystem messageSystem, ResourceSystem resources) {
+    public AccountServiceImpl(MessageSystem messageSystem, ResourceSystem resources, String fileName) {
         this.address = new Address();
         this.messageSystem = messageSystem;
-        this.connectionInfo= (DbInfo)resources.getResource(DbInfo.class);
+        this.connectionInfo= (DbInfo)resources.getResource(fileName);
         messageSystem.addService(this);
         messageSystem.getAddressService().setAddressAS(address);
 

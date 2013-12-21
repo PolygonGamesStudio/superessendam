@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class ResourceSystemImpl implements ResourceSystem {
     private final String resourcePath = "src/main/resources";
-    private Map<Class<?>, Resource>  resources = new HashMap<>();
+    private Map<String, Resource>  resources = new HashMap<>();
 
     public ResourceSystemImpl()
     {
@@ -30,13 +30,13 @@ public class ResourceSystemImpl implements ResourceSystem {
 
             while(iterator.hasNext())
             {
+                String fileName = iterator.getFileName();
                 saxParser.parse(iterator.getFile(), saxHandler);
                 Object obj = saxHandler.getObject();
-                String fileName = iterator.getFileName();
 
                 if(obj instanceof Resource)
                 {
-                    resources.put(obj.getClass(), (Resource)obj);
+                    resources.put(fileName, (Resource)obj);
                 }
 
             }
@@ -46,8 +46,8 @@ public class ResourceSystemImpl implements ResourceSystem {
         }
     }
 
-    public Resource getResource(Class<?> className)
+    public Resource getResource(String fileName)
     {
-        return resources.get(className);
+        return resources.get(fileName);
     }
 }
