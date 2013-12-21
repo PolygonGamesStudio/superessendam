@@ -124,15 +124,15 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         UserSession userSession = sessionIdToUserSession.get(session.getId());
 
         switch (request.getPathInfo()) {
-//            case USERID:
-//                if (userSession == null || userSession.getUserId() == null) {
-//                    response.sendRedirect("/auth");
-//                    return;
-//                }
-//                Cookie userCookie = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
-//                response.addCookie(userCookie); // FIXME: hash userSession.getUserId() + salt
-//                responseUserPage(response, "name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
-//                return;
+            case USERID:
+                if (userSession == null || userSession.getUserId() == null) {
+                    response.sendRedirect("/auth");
+                    return;
+                }
+                Cookie userCookie = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
+                response.addCookie(userCookie); // FIXME: hash userSession.getUserId() + salt
+                responseUserPage(response, "name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
+                return;
             case CHAT:
                 responseChatPage(response);
                 return;
