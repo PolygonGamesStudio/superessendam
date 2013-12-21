@@ -30,9 +30,9 @@ public class ResourceSystemImpl implements ResourceSystem {
 
             while(iterator.hasNext())
             {
+                String fileName = iterator.getFileName();
                 saxParser.parse(iterator.getFile(), saxHandler);
                 Object obj = saxHandler.getObject();
-                String fileName = iterator.getFileName();
 
                 if(obj instanceof Resource)
                 {
