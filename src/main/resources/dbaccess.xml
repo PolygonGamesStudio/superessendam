@@ -2,7 +2,7 @@
     <dataBaseName>gameJavaDB</dataBaseName>
     <type>mysql</type>
     <user>root</user>
-    <password>qwe</password>
+    <password>1fear1</password>
     <address>localhost</address>
     <port>3306</port>
 </class>

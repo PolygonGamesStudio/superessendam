@@ -23,11 +23,12 @@ public class MessageSystemTest {
     @Before
     public void setUp() {
         ResourceSystem resourceSystem = new ResourceSystemImpl();
+
         messageSystem = new MessageSystem();
         frontend = new FrontendImpl(messageSystem);
         spyFrontend = spy(frontend);
 
-        accountService = new AccountServiceImpl(messageSystem,resourceSystem, "testDB.xml");
+        accountService = new AccountServiceImpl(messageSystem, resourceSystem, "dbaccess.xml");
         spyAccountService = spy(accountService);
     }
 

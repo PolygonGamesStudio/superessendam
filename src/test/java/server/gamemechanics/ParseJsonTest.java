@@ -19,9 +19,9 @@ public class ParseJsonTest {
         JSONObject jsonObject = new JSONObject();
         Set<Long> ids = new HashSet<>();
         ids.add((long) 5);
-        ids.add((long) 6);
-        ids.add((long) 7);
-        ids.add((long) 8);
+//        ids.add((long) 6);
+//        ids.add((long) 7);
+//        ids.add((long) 8);
         for (Long id : ids) {
             try {
                 jsonObject.append("id", id);

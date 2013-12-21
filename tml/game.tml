@@ -25,7 +25,7 @@
     ws.onmessage = function(evt) {
         alert(evt.data);
         if (evt.data == 'wait') {
-            document.getElementById("message").innerHTML = "waiting...";
+            document.getElementById("message").innerHTML = "waiting for other players...";
         };
     };
     function handleKeyDown(e) {

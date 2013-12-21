@@ -55,7 +55,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     }
 
     @Override
-    public void makeDesigionAboutPersonInRoom(Long idForSocket, String roomName, boolean isConnectionToRoomAllowed) {
+    public void makeDecisionAboutPersonInRoom(Long idForSocket, String roomName, boolean isConnectionToRoomAllowed) {
         if (isConnectionToRoomAllowed) {
             if (idToUserSession.get(idForSocket) != null) {
                 idToUserSession.get(idForSocket).setRoomName(roomName);
