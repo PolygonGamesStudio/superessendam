@@ -31,7 +31,7 @@
     function handleKeyDown(e) {
         // TODO: it work's only in firefox; Chrome is not done
         //cross browser issues exist
-        ws.send('hello');
+        ws.send('hello from browser');
 //        ws.send('hello');
         //if(!e) { var e = window.event; }
         //switch(e.keyCode) {
@@ -42,6 +42,7 @@
     //    };
     }
     window.addEventListener('keypress', handleKeyDown);
+
 
 </script>
 </html>

@@ -3,8 +3,6 @@ package server.service;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.eclipse.jetty.websocket.servlet.*;
-import org.json.JSONException;
-import org.json.JSONObject;
 import server.*;
 import server.base.Frontend;
 import server.message.*;
@@ -49,6 +47,11 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         for (Object key: gamesMap.keySet()) {
             roomsCountUsers.put(key.toString(), (Long) gamesMap.get(key));
         }
+    }
+
+    @Override
+    public void broadcastToSockets(Long userId, String response) {
+        userIdToSocket.get(userId).broadcast(response);
     }
 
     public void setId(String sessionId, Long userId) {
@@ -347,23 +350,28 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 
         @Override
         public void onWebSocketText(String message) {
-            try {
-                JSONObject jsonObject = new JSONObject(message);
-                String id = jsonObject.getString("id");
-                String msg = jsonObject.getString("message");
-                System.out.println("            id: " + id);
-                System.out.println("       message: " + msg);
+//            try {
+//                JSONObject jsonObject = new JSONObject(message);
+//                String id = jsonObject.getString("id");
+//                String msg = jsonObject.getString("message");
+//                System.out.println("            id: " + id);
+//                System.out.println("       message: " + msg);
+//
+//                UserSession userSession = idToUserSession.get(Long.parseLong(id));
+//                String gamerLogin = userSession.getLogin();
+//                Address frontend = messageSystem.getAddressService().getAddressFE();
+//                Address gameMechanics = messageSystem.getAddressService().getAddressGM();
+//                messageSystem.sendMessage(new MsgSendEvent(frontend, gameMechanics, gamerLogin + "(" + userId + ")" + ": " + msg, userId));
+//
+//            } catch (JSONException e) {
+//                System.out.println("Smth got wrong with casting message to json");
+//            }
+            Address gameMechanics = messageSystem.getAddressService().getAddressGM();
+            UserSession userSession = idToUserSession.get(userId);
+            String gamerLogin = userSession.getLogin();
+            messageSystem.sendMessage(new MsgSendEvent(getAddress(), gameMechanics, gamerLogin + "(" + userId + ")" + ": " + message, userId));
 
-                UserSession userSession = idToUserSession.get(Long.parseLong(id));
-                String gamerLogin = userSession.getLogin();
-                Address frontend = messageSystem.getAddressService().getAddressFE();
-                Address gameMechanics = messageSystem.getAddressService().getAddressGM();
-                messageSystem.sendMessage(new MsgSendEvent(frontend, gameMechanics, gamerLogin + ": " + msg));
-
-            } catch (JSONException e) {
-                System.out.println("Smth got wrong with casting message to json");
-            }
-            broadcast("Hello");
+//            broadcast("Hello");
         }
     }
 }

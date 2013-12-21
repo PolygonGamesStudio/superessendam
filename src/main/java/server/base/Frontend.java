@@ -8,4 +8,6 @@ public interface Frontend {
     void makeDecisionAboutPersonInRoom(Long idForSocket, String roomName, boolean isConnectionToRoomAllowed);
 
     void putDataForGameHall(Map gamesMap);
+
+    void broadcastToSockets(Long userId, String response);
 }

@@ -14,9 +14,7 @@ import static org.mockito.Mockito.*;
 
 public class MessageSystemTest {
 
-    private AccountServiceImpl accountService;
     private AccountServiceImpl spyAccountService;
-    private FrontendImpl frontend;
     private FrontendImpl spyFrontend;
     private MessageSystem messageSystem;
 
@@ -25,10 +23,10 @@ public class MessageSystemTest {
         ResourceSystem resourceSystem = new ResourceSystemImpl();
 
         messageSystem = new MessageSystem();
-        frontend = new FrontendImpl(messageSystem);
+        FrontendImpl frontend = new FrontendImpl(messageSystem);
         spyFrontend = spy(frontend);
 
-        accountService = new AccountServiceImpl(messageSystem, resourceSystem, "dbaccess.xml");
+        AccountServiceImpl accountService = new AccountServiceImpl(messageSystem, resourceSystem, "dbaccess.xml");
         spyAccountService = spy(accountService);
     }
 

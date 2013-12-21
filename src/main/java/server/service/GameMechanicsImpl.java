@@ -50,8 +50,7 @@ public class GameMechanicsImpl implements Subscriber, Runnable, GameMechanics {
             idSet.add(userId);
             roomNameToIds.put(room, idSet);
             return true;
-        }
-        else {
+        } else {
             return roomNameToIds.get(room).size() < playerAmount;
         }
 
@@ -59,7 +58,7 @@ public class GameMechanicsImpl implements Subscriber, Runnable, GameMechanics {
 
     public JSONObject getRooms() {
         JSONObject userInRooms = new JSONObject();
-        for (String room: roomNameToIds.keySet()) {
+        for (String room : roomNameToIds.keySet()) {
             try {
                 userInRooms.put(room, roomNameToIds.get(room).size());
             } catch (JSONException e) {
@@ -69,10 +68,8 @@ public class GameMechanicsImpl implements Subscriber, Runnable, GameMechanics {
         return userInRooms;
     }
 
-    public void handleEvent(String stuff) {
-        System.out.println("GM");
-        System.out.println("Hello, " + stuff);
-        System.out.println("GM");
+    public String handleEvent(String stuff, Long userId) {
+        return "From GM, with love: " + stuff + " ...from user: " + userId;
     }
 
     public void run() {

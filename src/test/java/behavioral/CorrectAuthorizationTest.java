@@ -55,15 +55,12 @@ public class CorrectAuthorizationTest {
 
         serverMessage = driver.findElement(By.id("message"));
         assert serverMessage.getText().equals("User session: Waiting for authorization") : "Wrong message from server";
-        TimeHelper.sleep(3000);
+        TimeHelper.sleep(1000);
 
         driver.get(GAME_URL);
         assert driver.getCurrentUrl().equals(GAME_URL) : driver.getCurrentUrl();
 
         WebElement userState = driver.findElement(By.id("state"));
         assert userState.getText().equals("User state: name = python, id = 2");
-//        TimeHelper.sleep(3000);
-//        userState = driver.findElement(By.id("state"));
-//        assert userState.getText().equals("User state: name = python, id = 2");
     }
 }
