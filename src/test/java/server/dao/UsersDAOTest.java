@@ -1,16 +1,15 @@
 package server.dao;
 
 import org.junit.After;
-import org.junit.Test;
 import org.junit.Before;
+import org.junit.Test;
 import resource.ResourceSystemImpl;
-import server.base.Resource;
 import server.base.ResourceSystem;
-
-import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import static org.junit.Assert.assertEquals;
 
 public class UsersDAOTest {
 
@@ -25,7 +24,7 @@ public class UsersDAOTest {
             userDAO.createTable("users");
             userDAO.set("test_user1", "test_password1");
         } catch (SQLException e) {
-            assertEquals("asdfasdf", true, false);
+            assertEquals("could not connect", true, false);
         }
 
 
@@ -46,7 +45,7 @@ public class UsersDAOTest {
             userDAO.delete("test_user1");
             userDAO.dropTable("users");
         } catch (SQLException e) {
-            assertEquals(true, false);
+            assertEquals("database was not deleted", true, false);
         }
 
 

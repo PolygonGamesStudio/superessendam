@@ -1,8 +1,8 @@
 <class type="resource.DbInfo">
     <dataBaseName>gameJavaDB</dataBaseName>
     <type>mysql</type>
-    <user>root</user>
-    <password>1fear1</password>
+    <user></user>
+    <password></password>
     <address>localhost</address>
     <port>3306</port>
 </class>
