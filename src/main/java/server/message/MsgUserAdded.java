@@ -16,6 +16,7 @@ public class MsgUserAdded extends MsgToGM {
 
     @Override
     void exec(GameMechanics gameMechanics) {
-        gameMechanics.userAdd(room, userId);
+        boolean isConnectionToRoomAllowed = gameMechanics.userAdd(room, userId);
+        gameMechanics.getMessageSystem().sendMessage(new MsgRoomDesigion(getTo(), getFrom(), room, userId, isConnectionToRoomAllowed));
     }
 }

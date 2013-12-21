@@ -9,5 +9,5 @@ public interface GameMechanics {
 
     public MessageSystem getMessageSystem();
 
-    void userAdd(String room, Long userId);
+    boolean userAdd(String room, Long userId);
 }

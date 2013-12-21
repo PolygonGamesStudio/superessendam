@@ -10,6 +10,7 @@ public class UserSession {
     private String sessionId;
     private Long userId;
     private boolean isAuthResponseFromServer;
+    private String roomName;
 
     //    public UserSession(Address addressFE, String login, String password, String sessionId) {
     public UserSession(Address addressFE, Address addressGM, Address addressAS, String login, String sessionId) {
@@ -54,5 +55,13 @@ public class UserSession {
     }
     public boolean gotAuthResponse() {
         return isAuthResponseFromServer;
+    }
+
+    public void clearRoomName() {
+        roomName = null;
+    }
+
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
 }

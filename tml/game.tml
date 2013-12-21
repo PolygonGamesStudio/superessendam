@@ -4,16 +4,19 @@
     <title>Игра</title>
 </head>
 <body>
+<div id="state">${userState}</div>
+<!--TODO: add element: {"method":"id","selector":"state"} for name and id-->
+<div id="message"></div>
 Тут будет игра
 </body>
-<script src="js/cookie.js"></script>
+<script src="/js/cookie.js"></script>
 <script>
     var KEYCODE_UP = 38;        //usefull keycode
     var KEYCODE_LEFT = 37;      //usefull keycode
     var KEYCODE_RIGHT = 39;     //usefull keycode
     var KEYCODE_DOWN = 40;     //usefull keycode
 
-    var ws = new WebSocket("ws://localhost:8080/gamemechanics"+"/"+window.location.href.split("/")[4]);
+    var ws = new WebSocket("ws://localhost:8080/game"+"/"+window.location.href.split("/")[4]);
 
     ws.onopen = function() { };
 
@@ -21,6 +24,9 @@
 
     ws.onmessage = function(evt) {
         alert(evt.data);
+        if (evt.data == 'wait') {
+            document.getElementById("message").innerHTML = "waiting...";
+        };
     };
     function handleKeyDown(e) {
         // TODO: it work's only in firefox; Chrome is not done

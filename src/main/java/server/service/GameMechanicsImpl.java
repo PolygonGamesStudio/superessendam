@@ -1,11 +1,12 @@
 package server.service;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import server.Address;
 import server.Subscriber;
 import server.TimeHelper;
 import server.base.GameMechanics;
 import server.message.MessageSystem;
-import server.message.MsgCloseSocket;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -22,25 +23,36 @@ public class GameMechanicsImpl implements Subscriber, Runnable, GameMechanics {
     public GameMechanicsImpl(MessageSystem messageSystem) {
         this.address = new Address();
         this.messageSystem = messageSystem;
-        playerAmount = 2; // TODO: move to RS
+        playerAmount = 1; // TODO: move to RS
         messageSystem.addService(this);
         messageSystem.getAddressService().setAddressGM(address);
 
     }
 
-    public void userAdd(String room, Long userId) {
+    public String getUsersIdJson(String roomName) {
+//        roomNameToIds.get(roomName)
+        JSONObject jsonObject = new JSONObject();
+        for (Long id : roomNameToIds.get(roomName)) {
+            try {
+                jsonObject.append("id", id);
+            } catch (JSONException e) {
+                System.out.println("error with append to json");
+            }
+        }
+        System.out.println(jsonObject.toString());
+        return jsonObject.toString();
+
+    }
+
+    public boolean userAdd(String room, Long userId) {
         if (roomNameToIds.get(room) == null) {
             Set idSet = new HashSet();
             idSet.add(userId);
             roomNameToIds.put(room, idSet);
+            return true;
         }
         else {
-            if (roomNameToIds.get(room).size() <= playerAmount) {
-                roomNameToIds.get(room).add(userId);
-            }
-            else {
-                    messageSystem.sendMessage(new MsgCloseSocket(messageSystem.getAddressService().getAddressGM(), messageSystem.getAddressService().getAddressFE(), userId));
-                }
+            return roomNameToIds.get(room).size() < playerAmount;
         }
 
     }
@@ -56,6 +68,7 @@ public class GameMechanicsImpl implements Subscriber, Runnable, GameMechanics {
             messageSystem.execForSubscriber(this);
             TimeHelper.sleep(10);
         }
+
     }
 
     public Address getAddress() {

@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.HttpCookie;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -35,6 +36,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         this.address = new Address();
         this.messageSystem = messageSystem;
         messageSystem.addService(this);
+        messageSystem.getAddressService().setAddressFE(address);
     }
 
 
@@ -53,8 +55,12 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     }
 
     @Override
-    public void closeSocket(Long idForSocket) {
-        userIdToSocket.get(idForSocket).onWebSocketClose(418, "error");
+    public void makeDesigionAboutPersonInRoom(Long idForSocket, String roomName, boolean isConnectionToRoomAllowed) {
+        if (isConnectionToRoomAllowed) {
+            if (idToUserSession.get(idForSocket) != null) {
+                idToUserSession.get(idForSocket).setRoomName(roomName);
+            }
+        }
     }
 
     private static String getTime() {
@@ -64,13 +70,6 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         return formatter.format(date);
     }
 
-    private void responseUserPage(HttpServletResponse response, String userState) throws IOException {
-        Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("refreshPeriod", "1000");
-        pageVariables.put("serverTime", getTime());
-        pageVariables.put("userState", userState);
-        response.getWriter().println(PageGenerator.getPage("timer.tml", pageVariables));
-    }
     private void responseAuthPage(HttpServletResponse response, String userState) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("userState", userState);
@@ -81,9 +80,10 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         pageVariables.put("userState", "nothing");
         response.getWriter().println(PageGenerator.getPage("chat.tml", pageVariables));
     }
-    private void responseGamePage(HttpServletResponse response) throws IOException {
+
+    private void responseGamePage(HttpServletResponse response, String userState) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
-        pageVariables.put("userState", "nothing");
+        pageVariables.put("userState", userState);
         response.getWriter().println(PageGenerator.getPage("game.tml", pageVariables));
     }
 
@@ -105,7 +105,6 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         response.getWriter().println(PageGenerator.getPage("slave.tml", pageVariables));
     }
 
-    private static final String USERID = "/userid";
     private static final String CHAT = "/chat";
     private static final String GAME = "/game";
     private static final String AUTH = "/auth";
@@ -124,15 +123,6 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         UserSession userSession = sessionIdToUserSession.get(session.getId());
 
         switch (request.getPathInfo()) {
-//            case USERID:
-//                if (userSession == null || userSession.getUserId() == null) {
-//                    response.sendRedirect("/auth");
-//                    return;
-//                }
-//                Cookie userCookie = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
-//                response.addCookie(userCookie); // FIXME: hash userSession.getUserId() + salt
-//                responseUserPage(response, "name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
-//                return;
             case CHAT:
                 responseChatPage(response);
                 return;
@@ -144,7 +134,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                 idToUserSession.put(userSession.getUserId(), userSession);
                 Cookie gamerCookie = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
                 response.addCookie(gamerCookie); // FIXME: hash userSession.getUserId() + salt
-                responseGamePage(response);
+                responseGamePage(response, "User state: name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
                 return;
             case AUTH:
                 if (userSession == null) {
@@ -183,7 +173,8 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                     idToUserSession.put(userSession.getUserId(), userSession);
                     Cookie gamerCookieRoom = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
                     response.addCookie(gamerCookieRoom); // FIXME: hash userSession.getUserId() + salt
-                    responseGamePage(response);
+                    responseGamePage(response, "User state: name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
+                    return;
                 } else
                     response404Page(response);
         }
@@ -208,7 +199,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
 
             // FIXME: possible bug with addresses
 
-            response.sendRedirect(GAME + "/1"); // FIXME: here
+            response.sendRedirect(GAME + "/qwe"); // FIXME: here
         }
 
         if (request.getPathInfo().equals("/newuser")) {
@@ -222,7 +213,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
             Address accountServiceAddress = userSession.getAddressAS();
             messageSystem.sendMessage(new MsgToPutUser(frontendAddress, accountServiceAddress, login, password, sessionId));
 
-            response.sendRedirect("/userid");
+            response.sendRedirect(GAME + "/qwe"); // FIXME: here
         }
     }
 
@@ -244,9 +235,19 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
             public Object createWebSocket(ServletUpgradeRequest servletUpgradeRequest, ServletUpgradeResponse servletUpgradeResponse) {
                 // TODO: check for correct url
                 String path = servletUpgradeRequest.getRequestPath();
-                String room = path.substring("/gamemechanics".length() + 1);
+                String room = path.substring("/game".length() + 1);
 //                servletUpgradeResponse.addHeader("roomName",room);
-                Long userId = Long.valueOf(servletUpgradeRequest.getCookies().get(1).getValue());
+
+                // FIXME: please
+                Long userId = null;
+                for (HttpCookie cookie : servletUpgradeRequest.getCookies()) {
+                    if (cookie.getName().equals("user_id"))
+                        userId = Long.valueOf(cookie.getValue());
+                }
+                if (userId == null)
+                    System.out.println("muffin not found");
+                // FIXME: please
+
                 GMSocket socket = new GMSocket(room, userId);
                 // msg to GM -> room / count player
                 if (nameToRoom.get(room) == null) {
@@ -296,6 +297,9 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         public void onWebSocketClose(int statusCode, String reason) {
             if (nameToRoom.get(roomName) != null) {
                 nameToRoom.get(roomName).remove(this);
+            }
+            if (idToUserSession.get(userId) != null) {
+                idToUserSession.get(userId).clearRoomName();
             }
         }
 

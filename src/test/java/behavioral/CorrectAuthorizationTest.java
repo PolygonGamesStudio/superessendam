@@ -14,7 +14,7 @@ import server.TimeHelper;
 public class CorrectAuthorizationTest {
     private static final String BASE_URL = "http://localhost:8080/";
     private static final String AUTH_URL = "http://localhost:8080/auth";
-    private static final String USER_ID_URL = "http://localhost:8080/userid";
+    private static final String GAME_URL = "http://localhost:8080/game/1";
 
     private WebDriver driver;
 
@@ -55,15 +55,15 @@ public class CorrectAuthorizationTest {
 
         serverMessage = driver.findElement(By.id("message"));
         assert serverMessage.getText().equals("User session: Waiting for authorization") : "Wrong message from server";
-        TimeHelper.sleep(6000);
+        TimeHelper.sleep(3000);
 
-        driver.get(USER_ID_URL);
-        assert driver.getCurrentUrl().equals(USER_ID_URL) : driver.getCurrentUrl();
+        driver.get(GAME_URL);
+        assert driver.getCurrentUrl().equals(GAME_URL) : driver.getCurrentUrl();
 
         WebElement userState = driver.findElement(By.id("state"));
         assert userState.getText().equals("User state: name = python, id = 2");
-        TimeHelper.sleep(3000);
-        userState = driver.findElement(By.id("state"));
-        assert userState.getText().equals("User state: name = python, id = 2");
+//        TimeHelper.sleep(3000);
+//        userState = driver.findElement(By.id("state"));
+//        assert userState.getText().equals("User state: name = python, id = 2");
     }
 }
