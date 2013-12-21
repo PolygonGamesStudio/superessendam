@@ -57,6 +57,18 @@ public class GameMechanicsImpl implements Subscriber, Runnable, GameMechanics {
 
     }
 
+    public JSONObject getRooms() {
+        JSONObject userInRooms = new JSONObject();
+        for (String room: roomNameToIds.keySet()) {
+            try {
+                userInRooms.put(room, roomNameToIds.get(room).size());
+            } catch (JSONException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+        }
+        return userInRooms;
+    }
+
     public void handleEvent(String stuff) {
         System.out.println("GM");
         System.out.println("Hello, " + stuff);
