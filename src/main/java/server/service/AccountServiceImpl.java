@@ -1,5 +1,8 @@
 package server.service;
 
+import resource.DbInfo;
+import server.base.*;
+
 import server.Address;
 import server.Subscriber;
 import server.TimeHelper;
@@ -19,10 +22,12 @@ public class AccountServiceImpl implements Subscriber, Runnable, AccountService 
     //    private Address address;
     private final MessageSystem messageSystem;
 //    private MessageSystem messageSystem;
+    private DbInfo connectionInfo;
 
-    public AccountServiceImpl(MessageSystem messageSystem) {
+    public AccountServiceImpl(MessageSystem messageSystem, ResourceSystem resources) {
         this.address = new Address();
         this.messageSystem = messageSystem;
+        this.connectionInfo= (DbInfo)resources.getResource(DbInfo.class);
         messageSystem.addService(this);
         messageSystem.getAddressService().setAddressAS(address);
 
@@ -37,7 +42,7 @@ public class AccountServiceImpl implements Subscriber, Runnable, AccountService 
 
     public Long getUserId(String login, String password) {
         TimeHelper.sleep(500);
-        Connection connection = ConnectDB.getConnection("gameJavaDB");
+        Connection connection = ConnectDB.getConnection(connectionInfo);
         UsersDAO userDAO = new UsersDAO(connection);
         try {
             UsersDataSet result = userDAO.get(login, password);
@@ -50,7 +55,7 @@ public class AccountServiceImpl implements Subscriber, Runnable, AccountService 
 
     public void setUserId(String login, String password) {
         TimeHelper.sleep(500);
-        Connection connection = ConnectDB.getConnection("gameJavaDB");
+        Connection connection = ConnectDB.getConnection(connectionInfo);
         UsersDAO userDAO = new UsersDAO(connection);
         try {
             userDAO.set(login, password);

@@ -6,6 +6,8 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import resource.ResourceSystemImpl;
+import server.base.ResourceSystem;
 import server.message.MessageSystem;
 import server.service.AccountServiceImpl;
 import server.service.FrontendImpl;
@@ -18,8 +20,10 @@ public class Main {
         MessageSystem messageSystem = new MessageSystem();
 
         FrontendImpl frontend = new FrontendImpl(messageSystem);
-        AccountServiceImpl accountService = new AccountServiceImpl(messageSystem);
+        ResourceSystem resourceSystem = new ResourceSystemImpl();
+        AccountServiceImpl accountService = new AccountServiceImpl(messageSystem, resourceSystem);
         GameMechanicsImpl gameMechanics = new GameMechanicsImpl(messageSystem);
+
 
         (new Thread(frontend)).start();
         (new Thread(accountService)).start();
