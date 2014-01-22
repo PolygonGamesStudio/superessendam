@@ -42,22 +42,33 @@ public class PingPongSocket {
 
     @OnOpen
     public void onWebSocketConnect(Session session) {
+//        session.setMaxTextMessageBufferSize(10000);
+//        session.setMaxBinaryMessageBufferSize(10000);
+
+//        session.setMaxIdleTimeout(50000);
         System.out.println("Socket connected: " + session);
         this.session = session;
         this.userId = this.getId();
 
         PingPongSocket.sockets.put(userId, this);
-        this.sendToClient("Hello, user " + this.userId);    // TODO: make initial sens to one who opened the socket
-        this.broadcast("New user appeared: user " + this.userId);
+
+        try {
+            session.getBasicRemote().sendText("hello");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        String mes = "Hello, user " + this.userId;
+//        this.sendToClient("Hello, user " + this.userId);    // TODO: make initial sens to one who opened the socket
+//        this.broadcast("New user appeared: user " + this.userId);
     }
 
     @OnMessage
     public void onWebSocketMessage(String message) {
-        System.out.println("Received roatation: " + message);
+        System.out.println("Received rotation: " + message);
 
 //        String response = null; // TODO: add response
 //        this.broadcast(response);
-        this.broadcast(message);
+//        this.broadcast(message);  // FIXME: uncomment here
     }
 
     @OnClose

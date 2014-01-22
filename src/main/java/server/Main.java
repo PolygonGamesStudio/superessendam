@@ -6,12 +6,16 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.websocket.jsr356.server.deploy.WebSocketServerContainerInitializer;
 import resource.ResourceSystemImpl;
 import server.base.ResourceSystem;
 import server.message.MessageSystem;
 import server.service.AccountServiceImpl;
 import server.service.FrontendImpl;
 import server.service.GameMechanicsImpl;
+import server.socket.PingPongSocket;
+
+import javax.websocket.server.ServerContainer;
 
 
 public class Main {
@@ -44,19 +48,18 @@ public class Main {
         handlers.setHandlers(new Handler[]{resource_handler, context});
         server.setHandler(handlers);
 
-//        // socket realization from here on...
-//        try {
-//            ServerContainer wsContainer = WebSocketServerContainerInitializer.configureContext(context);
-//
+        // socket realization from here on...
+        try {
+            ServerContainer wsContainer = WebSocketServerContainerInitializer.configureContext(context);
+
 //            wsContainer.addEndpoint((ServerEndpointConfig) frontend);
-//
-////            wsContainer.addEndpoint(ChatSocketWithUserAgentToken.class);
-////            wsContainer.addEndpoint(PingPongSocket.class);
-////            wsContainer.addEndpoint(FrontendImpl.class);
-//        }
-//        catch (Throwable throwable) {
-//            throwable.printStackTrace(System.err);
-//        }
+
+//            wsContainer.addEndpoint(ChatSocketWithUserAgentToken.class);
+            wsContainer.addEndpoint(PingPongSocket.class);
+//            wsContainer.addEndpoint(FrontendImpl.class);
+        } catch (Throwable throwable) {
+            throwable.printStackTrace(System.err);
+        }
 
         server.start();
         server.join();

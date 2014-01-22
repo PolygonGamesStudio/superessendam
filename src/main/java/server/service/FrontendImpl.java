@@ -1,34 +1,32 @@
 package server.service;
 
-import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.eclipse.jetty.websocket.servlet.*;
 import server.*;
 import server.base.Frontend;
-import server.message.*;
+import server.message.MessageSystem;
+import server.message.MsgGetRooms;
+import server.message.MsgGetUserId;
+import server.message.MsgToPutUser;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
-import java.net.HttpCookie;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnable, Frontend {
-    //public class FrontendImpl extends HttpServlet implements Subscriber, Runnable, Frontend {
+//public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnable, Frontend {
+public class FrontendImpl extends HttpServlet implements Subscriber, Runnable, Frontend {
     private final MessageSystem messageSystem;
     private final Address address;
     private Map<String, UserSession> sessionIdToUserSession = new ConcurrentHashMap<>();
     private Map<Long, UserSession> idToUserSession = new ConcurrentHashMap<>();
-    private Map<String, Set<GMSocket>> nameToRoom = new ConcurrentHashMap<String, Set<GMSocket>>(); // TODO: commemnts
-    private Map<Long, GMSocket> userIdToSocket = new ConcurrentHashMap<>();
+    //    private Map<String, Set<GMSocket>> nameToRoom = new ConcurrentHashMap<String, Set<GMSocket>>(); // TODO: commemnts
+//    private Map<Long, GMSocket> userIdToSocket = new ConcurrentHashMap<>();
     private Map<String, Long> roomsCountUsers = new HashMap<>();
 
     public FrontendImpl(MessageSystem messageSystem) {
@@ -44,14 +42,14 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
     }
 
     public void putDataForGameHall(Map gamesMap) {
-        for (Object key: gamesMap.keySet()) {
+        for (Object key : gamesMap.keySet()) {
             roomsCountUsers.put(key.toString(), (Long) gamesMap.get(key));
         }
     }
 
     @Override
     public void broadcastToSockets(Long userId, String response) {
-        userIdToSocket.get(userId).broadcast(response);
+//        userIdToSocket.get(userId).broadcast(response);
     }
 
     public void setId(String sessionId, Long userId) {
@@ -85,6 +83,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         pageVariables.put("userState", userState);
         response.getWriter().println(PageGenerator.getPage("authform.tml", pageVariables));
     }
+
     private void responseChatPage(HttpServletResponse response) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("userState", "nothing");
@@ -96,6 +95,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         pageVariables.put("userState", userState);
         response.getWriter().println(PageGenerator.getPage("game.tml", pageVariables));
     }
+
     private void responseGameHallPage(HttpServletResponse response) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("roomsCountUsers", roomsCountUsers);
@@ -114,6 +114,7 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
         pageVariables.put("nothing", "nothing");
         response.getWriter().println(PageGenerator.getPage("master.tml", pageVariables));
     }
+
     private void responseSlavePage(HttpServletResponse response) throws IOException {
         Map<String, Object> pageVariables = new HashMap<>();
         pageVariables.put("nothing", "nothing");
@@ -186,12 +187,12 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                 return;
 
             // for mobile --> Frontend course
-//            case MOBILE_MASTER:
-//                responseMasterPage(response);
-//                return;
-//            case MOBILE_SLAVE:
-//                responseSlavePage(response);
-//                return;
+            case MOBILE_MASTER:
+                responseMasterPage(response);
+                return;
+            case MOBILE_SLAVE:
+                responseSlavePage(response);
+                return;
 
             default:
                 if (request.getPathInfo().matches(GAME + "/[A-Za-z0-9]{1,512}")) {
@@ -203,9 +204,10 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
                     Cookie gamerCookieRoom = new Cookie("user_id", URLEncoder.encode(String.valueOf(userSession.getUserId()), "UTF-8"));
                     response.addCookie(gamerCookieRoom); // FIXME: hash userSession.getUserId() + salt
                     responseGamePage(response, "User state: name = " + userSession.getLogin() + ", id = " + userSession.getUserId());
-                    return;
-                } else
+                } else {
+                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                     response404Page(response);
+                }
         }
     }
 
@@ -252,126 +254,6 @@ public class FrontendImpl extends WebSocketServlet implements Subscriber, Runnab
             messageSystem.execForSubscriber(this);
             TimeHelper.sleep(100);
 //            log.info(String.valueOf(handleCount));
-        }
-    }
-
-    // TODO: fix WebSockets from here
-    @Override
-    public void configure(WebSocketServletFactory webSocketServletFactory) {
-        webSocketServletFactory.getPolicy().setIdleTimeout(100000);
-        webSocketServletFactory.setCreator(new WebSocketCreator() {
-            @Override
-            public Object createWebSocket(ServletUpgradeRequest servletUpgradeRequest, ServletUpgradeResponse servletUpgradeResponse) {
-                // TODO: check for correct url
-                String path = servletUpgradeRequest.getRequestPath();
-                String room = path.substring("/game".length() + 1);
-//                servletUpgradeResponse.addHeader("roomName",room);
-
-                // FIXME: please
-                Long userId = null;
-                for (HttpCookie cookie : servletUpgradeRequest.getCookies()) {
-                    if (cookie.getName().equals("user_id"))
-                        userId = Long.valueOf(cookie.getValue());
-                }
-                if (userId == null)
-                    System.out.println("muffin not found");
-                // FIXME: please
-
-                GMSocket socket = new GMSocket(room, userId);
-                // msg to GM -> room / count player
-                if (nameToRoom.get(room) == null) {
-                    Set roomSet = new HashSet();
-                    roomSet.add(socket);
-                    nameToRoom.put(room, roomSet);
-                } else {
-                    nameToRoom.get(room).add(socket);
-                }
-                return socket;
-            }
-        });
-    }
-
-    private class GMSocket implements WebSocketListener {
-        private Session session;
-        private String roomName;
-        private Long userId;
-
-        public GMSocket(String roomName, Long userId) {
-            this.roomName = roomName;
-            this.userId = userId;
-        }
-
-        private void sendMessage(String message) {
-            try {
-                session.getRemote().sendString(message);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        private void broadcast(String message) {
-            for (GMSocket socket : nameToRoom.get(roomName)) {
-                if (this == socket)
-                    continue;
-                socket.sendMessage(message);
-            }
-        }
-
-        @Override
-        public void onWebSocketBinary(byte[] payload, int offset, int len) {
-
-        }
-
-        @Override
-        public void onWebSocketClose(int statusCode, String reason) {
-            if (nameToRoom.get(roomName) != null) {
-                nameToRoom.get(roomName).remove(this);
-            }
-            if (idToUserSession.get(userId) != null) {
-                idToUserSession.get(userId).clearRoomName();
-            }
-        }
-
-        @Override
-        public void onWebSocketConnect(Session session) {
-            this.session = session;
-            userIdToSocket.put(userId, this);
-            messageSystem.sendMessage(new MsgUserAdded(messageSystem.getAddressService().getAddressFE(), messageSystem.getAddressService().getAddressGM(), roomName, userId));
-            System.out.println("opened");
-        }
-
-        @Override
-        public void onWebSocketError(Throwable cause) {
-            System.out.println("Cause: " + cause);
-            if (nameToRoom.get(roomName) != null) {
-                nameToRoom.get(roomName).remove(this);
-            }
-        }
-
-        @Override
-        public void onWebSocketText(String message) {
-//            try {
-//                JSONObject jsonObject = new JSONObject(message);
-//                String id = jsonObject.getString("id");
-//                String msg = jsonObject.getString("message");
-//                System.out.println("            id: " + id);
-//                System.out.println("       message: " + msg);
-//
-//                UserSession userSession = idToUserSession.get(Long.parseLong(id));
-//                String gamerLogin = userSession.getLogin();
-//                Address frontend = messageSystem.getAddressService().getAddressFE();
-//                Address gameMechanics = messageSystem.getAddressService().getAddressGM();
-//                messageSystem.sendMessage(new MsgSendEvent(frontend, gameMechanics, gamerLogin + "(" + userId + ")" + ": " + msg, userId));
-//
-//            } catch (JSONException e) {
-//                System.out.println("Smth got wrong with casting message to json");
-//            }
-            Address gameMechanics = messageSystem.getAddressService().getAddressGM();
-            UserSession userSession = idToUserSession.get(userId);
-            String gamerLogin = userSession.getLogin();
-            messageSystem.sendMessage(new MsgSendEvent(getAddress(), gameMechanics, gamerLogin + "(" + userId + ")" + ": " + message, userId));
-
-//            broadcast("Hello");
         }
     }
 }

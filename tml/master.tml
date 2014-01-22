@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta chasrset="utf-8">
+    <!--<meta chasrset="utf-8">-->
     <title>master</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <style type="text/css">
@@ -40,6 +40,6 @@
     <pre class="output">beta : null
     gamma: null
     </pre>
-    <script src="js/master.js"></script>
+    <script src="js/mobile.js"></script>
 </body>
 </html>
