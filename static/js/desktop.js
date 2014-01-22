@@ -21,3 +21,7 @@ socket.onmessage = function(event) {
 socket.onerror = function(error) {
     alert("Ошибка " + error.message);
 };
+
+document.getElementById('temp').onclick = function() {
+    socket.send('hello');
+}

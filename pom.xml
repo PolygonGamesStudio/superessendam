@@ -9,16 +9,17 @@
     <artifactId>superessendam</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <!--<properties>-->
-    <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
-    <!--<webdriver.driver>firefox</webdriver.driver>-->
-    <!--</properties>-->
+    <properties>
+        <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
+        <!--<webdriver.driver>firefox</webdriver.driver>-->
+        <jetty.version>9.1.0.v20131115</jetty.version>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>9.1.0.v20131115</version>
+            <version>${jetty.version}</version>
         </dependency>
         <dependency>
             <groupId>org.freemarker</groupId>
@@ -28,7 +29,7 @@
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
-            <version>9.1.0.v20131115</version>
+            <version>${jetty.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -61,7 +62,7 @@
         <dependency>
             <groupId>org.eclipse.jetty.websocket</groupId>
             <artifactId>javax-websocket-server-impl</artifactId>
-            <version>9.1.0.v20131115</version>
+            <version>${jetty.version}</version>
         </dependency>
         <!---->
         <dependency>

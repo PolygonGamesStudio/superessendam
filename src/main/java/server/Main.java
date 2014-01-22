@@ -13,7 +13,7 @@ import server.message.MessageSystem;
 import server.service.AccountServiceImpl;
 import server.service.FrontendImpl;
 import server.service.GameMechanicsImpl;
-import server.socket.PingPongSocket;
+import server.socket.ChatSocketWithUserAgentToken;
 
 import javax.websocket.server.ServerContainer;
 
@@ -54,8 +54,8 @@ public class Main {
 
 //            wsContainer.addEndpoint((ServerEndpointConfig) frontend);
 
-//            wsContainer.addEndpoint(ChatSocketWithUserAgentToken.class);
-            wsContainer.addEndpoint(PingPongSocket.class);
+            wsContainer.addEndpoint(ChatSocketWithUserAgentToken.class);
+//            wsContainer.addEndpoint(PingPongSocket.class);
 //            wsContainer.addEndpoint(FrontendImpl.class);
         } catch (Throwable throwable) {
             throwable.printStackTrace(System.err);

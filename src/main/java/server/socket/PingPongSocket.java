@@ -26,8 +26,7 @@ public class PingPongSocket {
     private void sendToClient(String message) {
         try {
             this.session.getBasicRemote().sendText(message);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -52,11 +51,6 @@ public class PingPongSocket {
 
         PingPongSocket.sockets.put(userId, this);
 
-        try {
-            session.getBasicRemote().sendText("hello");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 //        String mes = "Hello, user " + this.userId;
 //        this.sendToClient("Hello, user " + this.userId);    // TODO: make initial sens to one who opened the socket
 //        this.broadcast("New user appeared: user " + this.userId);

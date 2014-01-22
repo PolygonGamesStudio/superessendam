@@ -3,7 +3,6 @@ package server.socket;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 
 import javax.websocket.*;
-import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Map;
@@ -21,7 +20,9 @@ public class ChatSocketWithUserAgentToken {
 
     private static Map<String, Set<ChatSocketWithUserAgentToken>> chats = new ConcurrentHashMap<>();
     private String token;
-    private Boolean isAuthorized = false;
+    private Boolean isAuthorized = false;   // флаг означающий, состоит ли человек в беседе
+    private boolean hasName = false;
+    private String name;
 
     private String getId() {
         return Integer.toHexString(this.hashCode());
@@ -49,7 +50,7 @@ public class ChatSocketWithUserAgentToken {
     }
 
     @OnOpen
-    public void onWebSocketConnect(Session session, @PathParam("room-name") String roomName, EndpointConfig config) {
+    public void onWebSocketConnect(Session session, EndpointConfig config) {
         System.out.println("Socket connected: " + session);
         this.session = session;
         this.userId = this.getId();
@@ -61,36 +62,55 @@ public class ChatSocketWithUserAgentToken {
 
         this.userAgent = (String) config.getUserProperties().get("User-Agent");
 
-
         if (this.userAgent.contains("Android")) {
             this.sendToClient("you are mobile");
-            this.sendToClient("Enter token:");
-        }
-        else {
-            this.token = this.getRandomHash();
-            this.isAuthorized = true;
-
+        } else {
             this.sendToClient("you are desktop");
-            this.sendToClient("Auth token: " + this.token);
-
-            Set<ChatSocketWithUserAgentToken> relatedSockets = new ConcurrentHashSet<>();
-            relatedSockets.add(this);
-            ChatSocketWithUserAgentToken.chats.put(this.token, relatedSockets);
         }
+
+//        this.sendToClient("Enter your name:");
+
     }
 
     @OnMessage
     public void onWebSocketMessage(String message) {
         System.out.println("Received message: " + message);
-        if (this.isAuthorized) {
-            this.broadcast(this.token, "User " + this.userId + ": " + message);
+
+        if (!this.isAuthorized && message.equals("service:create")) {
+            this.token = this.getRandomHash();
+            this.isAuthorized = true;
+
+            this.sendToClient("Auth token: " + this.token);
+
+            Set<ChatSocketWithUserAgentToken> relatedSockets = new ConcurrentHashSet<>();
+            relatedSockets.add(this);
+            ChatSocketWithUserAgentToken.chats.put(this.token, relatedSockets);
+
+            this.sendToClient("Enter your name:");
+            return;
         }
-        else {
+
+        if (!this.isAuthorized && message.equals("service:connect")) {
+            this.sendToClient("Enter token:");
+
+            return;
+        }
+
+        if (this.isAuthorized) {
+            if (this.hasName)
+                this.broadcast(this.token, this.name + ": " + message);
+            else {
+                this.name = message;
+                this.hasName = true;
+                this.sendToClient("Long live the ... " + this.name);
+            }
+        } else {
             if (ChatSocketWithUserAgentToken.chats.keySet().contains(message)) {
                 this.token = message;
                 this.isAuthorized = true;
                 ChatSocketWithUserAgentToken.chats.get(message).add(this);
-                this.broadcast(this.token, "User " + this.userId + " has connected"); // FIXME: smart broadcast
+                this.broadcast(this.token, "new user has connected"); // FIXME: smart broadcast
+                this.sendToClient("Enter name:");
             }
             else {
                 this.sendToClient("Invalid token! Try again...");

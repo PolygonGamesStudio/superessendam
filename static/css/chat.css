@@ -1,0 +1,43 @@
+
+#chatbox {
+    font-size: 14pt;
+    height: 500px;
+    width: 800px;
+    overflow: scroll;
+    border: 1px solid black;
+    display: none;
+
+}
+
+#message {
+    width:700px;
+}
+
+#sub {
+    /*visibility: hidden;*/
+    width:90px;
+}
+
+#conversation {
+    display: none;
+}
+
+.button {
+    cursor:pointer;
+    display:inline-block;
+    /*width:300px;*/
+    text-align:center;
+
+    border-radius:10px;
+
+    height:52px;
+    line-height:52px;
+
+    /*outline:none;*/
+    color:#333;
+    font-size:18px;
+    text-indent:20px;
+    text-decoration:none;
+    text-align:center;
+    text-shadow: #333 0px -1px 0px;
+}
